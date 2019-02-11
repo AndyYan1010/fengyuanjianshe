@@ -41,6 +41,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
     private ImageView         img_back;
     private TextView          tv_title;
     private TextView          tv_right;//驳回
+    private ImageView         img_ysh;
     private TextView          tv_wl;
     private TextView          tv_dwlx;
     private TextView          tv_skdw;
@@ -67,6 +68,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         img_back = mRootView.findViewById(R.id.img_back);
         tv_title = mRootView.findViewById(R.id.tv_title);
         tv_right = mRootView.findViewById(R.id.tv_right);
+        img_ysh = mRootView.findViewById(R.id.img_ysh);
         tv_wl = mRootView.findViewById(R.id.tv_wl);
         tv_dwlx = mRootView.findViewById(R.id.tv_dwlx);
         tv_skdw = mRootView.findViewById(R.id.tv_skdw);
@@ -80,19 +82,24 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
     private void initData() {
         tv_title.setText("付款申请单详情");
         img_back.setVisibility(View.VISIBLE);
-        tv_right.setVisibility(View.VISIBLE);
-        tv_right.setText("驳回");
         if ("A".equals(mKind)) {
             tv_submit.setText("提交审核");
         } else if ("B".equals(mKind)) {
             tv_submit.setText("审核");
+            tv_right.setVisibility(View.VISIBLE);
+            tv_right.setText("驳回");
+            if (null == MyAppliaction.userType || "".equals(MyAppliaction.userType) || MyAppliaction.userType.contains("员工")) {
+                tv_submit.setVisibility(View.GONE);
+            }
         } else if ("C".equals(mKind)) {
+            img_ysh.setVisibility(View.VISIBLE);
             tv_submit.setVisibility(View.GONE);
         } else if ("D".equals(mKind)) {
             tv_submit.setVisibility(View.GONE);
         } else {
             tv_submit.setVisibility(View.GONE);
         }
+
         mOrderDataInfo = new OrderDataInfo();
         img_back.setOnClickListener(this);
         tv_right.setOnClickListener(this);

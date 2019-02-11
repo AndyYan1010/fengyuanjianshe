@@ -387,4 +387,14 @@
         android:text="审核"
         android:textColor="@color/white"
         android:textSize="16sp"/>
+
+    <ImageView
+        android:id="@+id/img_ysh"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="80dp"
+        android:rotation="-45"
+        android:visibility="gone"
+        android:src="@drawable/icon_shenhe"/>
 </RelativeLayout>

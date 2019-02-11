@@ -21,9 +21,11 @@ public class MyAppliaction extends Application {
     public static boolean             isRelease    = false;
     public static ArrayList<Activity> listActivity = new ArrayList<Activity>();
     public static int                 flag         = -1;//判断是否被回收
-    public static String memID;//用户工号
     public static String userName;//用户名
-    public static String userpswd;//用户密码
+    public static String userpswd;//密码
+    public static String memID;//操作员ID
+    public static String userType;//用户(描述)类别  //员工，会计，经理
+    //下面暂未用到
     public static String userID;//用户id
 
     @Override

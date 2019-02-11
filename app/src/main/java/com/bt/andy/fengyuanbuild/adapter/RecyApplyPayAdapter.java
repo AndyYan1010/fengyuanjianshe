@@ -32,17 +32,15 @@ public class RecyApplyPayAdapter extends BaseQuickAdapter<List, BaseViewHolder> 
         helper.setText(R.id.tv_date, item.get(0).toString().substring(0,10)+" "+item.get(0).toString().substring(11,16));//2019-01-14T00:00:00
         String state = item.get(2).toString();
         if ("A".equals(state)){
-            helper.setText(R.id.tv_state,"创建    ");
+            helper.setText(R.id.tv_state,"已创建");
         }else if ("B".equals(state)){
             helper.setText(R.id.tv_state,"审核中");
         }else if ("C".equals(state)){
             helper.setText(R.id.tv_state,"已审核");
         }else if ("D".equals(state)){
-            helper.setText(R.id.tv_state,"重新审核");
+            helper.setText(R.id.tv_state,"重新审核");//需要修改后、再次提交
         }else {
             helper.setText(R.id.tv_state,"暂存    ");
         }
-
-
     }
 }

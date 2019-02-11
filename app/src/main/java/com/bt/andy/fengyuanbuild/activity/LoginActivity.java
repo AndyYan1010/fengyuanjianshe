@@ -12,10 +12,14 @@ import com.bt.andy.fengyuanbuild.BaseActivity;
 import com.bt.andy.fengyuanbuild.MainActivity;
 import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
+import com.bt.andy.fengyuanbuild.messegeInfo.LoginDetailInfo;
 import com.bt.andy.fengyuanbuild.utils.Consts;
 import com.bt.andy.fengyuanbuild.utils.SpUtils;
 import com.bt.andy.fengyuanbuild.utils.ThreadUtils;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
+import com.google.gson.Gson;
+
+import java.util.List;
 
 import kingdee.bos.webapi.client.K3CloudApiClient;
 
@@ -105,6 +109,27 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     if (result) {
                         MyAppliaction.userName = number;
                         MyAppliaction.userpswd = pass;
+                        //查询操作员信息
+                        //                        String sql = "{\"FormId\": \"BD_Empinfo\",\"FieldKeys\": \"FName,FNumber\"," +
+                        //                                "    \"FilterString\": \"FName='" + number + "'\",\"OrderString\": \"\"," +
+                        //                                "    \"TopRowCount\": 100,\"StartRow\": 0,\"Limit\": 0}";
+                       /* String sql = "{\"FormId\": \"SEC_User\",\"FieldKeys\": \"FName,FUserID \"," +
+                                "    \"FilterString\": \"FName='" + number + "'\"," +
+                                "    \"OrderString\": \"\",\"TopRowCount\": 100," +
+                                "    \"StartRow\": 0,\"Limit\": 0}";*/
+                        //                        List<List<Object>> lists = client.executeBillQuery(sql);
+                        //                        MyAppliaction.memID = lists.get(0).get(1).toString();
+                        // String searchSql = "{\"CreateOrgId\":\"BD_Empinfo\",\"Number\": \"" + MyAppliaction.memID + "\",\"Id\": \"\"}";
+                        String searchSql = "{\"CreateOrgId\": \"SEC_User\",\"Number\": \"" + number + "\",\"Id\": \"\"}";
+                        String bd_empinfo = client.view("SEC_User", searchSql);
+                        Gson gson = new Gson();
+                        LoginDetailInfo loginDetailInfo = gson.fromJson(bd_empinfo, LoginDetailInfo.class);
+                        MyAppliaction.memID = "" + loginDetailInfo.getResult().getResult().getId();
+                        List<?> fDescription = loginDetailInfo.getResult().getResult().getFDescription();
+                        //从描述中获取账号权限
+                        if (fDescription.size() > 0) {
+                            MyAppliaction.userType = fDescription.get(0).toString();
+                        }
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
