@@ -110,6 +110,7 @@ public class OrderListFragment extends Fragment {
                         String sql = "{\"FormId\": \"CN_PAYAPPLY\",\"FieldKeys\": \"FDATE,FBILLNO,FDOCUMENTSTATUS,FID,FUnpaidAmount\"," +
                                 "    \"FilterString\": \"" + middleSql + "\",\"OrderString\": \"\"," +
                                 "    \"TopRowCount\": 1000,\"StartRow\": 0,\"Limit\": 0}";
+
                         //查询列表单据
                         List<List<Object>> lists = client.executeBillQuery(sql);
                         //[["2019-01-10T00:00:00","FKSQ000001","C"],["2019-01-14T00:00:00","FKSQ000002","C"],["2019-01-15T00:00:00","FKSQ000003","C"],["2019-01-31T00:00:00","FKSQ000004","A"]]
