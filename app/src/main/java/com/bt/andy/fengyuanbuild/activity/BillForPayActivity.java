@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import com.bt.andy.fengyuanbuild.BaseActivity;
 import com.bt.andy.fengyuanbuild.R;
+import com.bt.andy.fengyuanbuild.fragment.ApplyForPayFragment;
 
 /**
  * @创建者 AndyYan

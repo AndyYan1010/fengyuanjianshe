@@ -1,4 +1,4 @@
-package com.bt.andy.fengyuanbuild.activity;
+package com.bt.andy.fengyuanbuild.fragment;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -13,8 +13,6 @@ import android.widget.TextView;
 import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
 import com.bt.andy.fengyuanbuild.adapter.MyPagerAdapter;
-import com.bt.andy.fengyuanbuild.fragment.AddApplyPayFragment;
-import com.bt.andy.fengyuanbuild.fragment.OrderListFragment;
 import com.bt.andy.fengyuanbuild.viewmodle.MyFixedViewpager;
 
 import java.util.ArrayList;

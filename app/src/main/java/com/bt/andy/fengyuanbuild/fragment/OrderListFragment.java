@@ -96,24 +96,40 @@ public class OrderListFragment extends Fragment {
                     if (result) {
                         //区别查询订单类别
                         if (0 == mType) {
-                            middleSql = "FDOCUMENTSTATUS = 'A'";
+                            middleSql = "FDOCUMENTSTATUS = 'A' or FDOCUMENTSTATUS ='D' or FDOCUMENTSTATUS ='Z' and FCREATORID ='" + MyAppliaction.memID + "'";
                         } else if (1 == mType) {
-                            middleSql = "FDOCUMENTSTATUS = 'B' or FDOCUMENTSTATUS ='D' and FCREATORID ='" + MyAppliaction.memID + "'";
+                            middleSql = "FDOCUMENTSTATUS = 'B' and FCREATORID ='" + MyAppliaction.memID + "'";
                         } else if (2 == mType) {
-                            middleSql = "FDOCUMENTSTATUS = 'B' or FDOCUMENTSTATUS ='D' ";
+                            middleSql = "FDOCUMENTSTATUS = 'B' ";
                         } else if (3 == mType) {
                             middleSql = "FDOCUMENTSTATUS = 'C' and FCREATORID ='" + MyAppliaction.memID + "'";
                         } else if (4 == mType) {
-                            middleSql = "FDOCUMENTSTATUS = 'C' ";
+                            middleSql = "FDOCUMENTSTATUS = 'C' and FCREATORID ='" + MyAppliaction.memID + "'";
                         }
 
-                        String sql = "{\"FormId\": \"CN_PAYAPPLY\",\"FieldKeys\": \"FDATE,FBILLNO,FDOCUMENTSTATUS,FID\"," +
+                        String sql = "{\"FormId\": \"CN_PAYAPPLY\",\"FieldKeys\": \"FDATE,FBILLNO,FDOCUMENTSTATUS,FID,FUnpaidAmount\"," +
                                 "    \"FilterString\": \"" + middleSql + "\",\"OrderString\": \"\"," +
                                 "    \"TopRowCount\": 1000,\"StartRow\": 0,\"Limit\": 0}";
                         //查询列表单据
                         List<List<Object>> lists = client.executeBillQuery(sql);
                         //[["2019-01-10T00:00:00","FKSQ000001","C"],["2019-01-14T00:00:00","FKSQ000002","C"],["2019-01-15T00:00:00","FKSQ000003","C"],["2019-01-31T00:00:00","FKSQ000004","A"]]
-                        mData.addAll(lists);
+                        if (3 == mType) {
+                            for (List bean : lists) {
+                                String money = null == bean.get(4).toString() ? "" : bean.get(4).toString();
+                                if (!"".equals(money) && !money.startsWith("0")) {
+                                    mData.add(bean);
+                                }
+                            }
+                        } else if (4 == mType) {
+                            for (List bean : lists) {
+                                String money = null == bean.get(4).toString() ? "" : bean.get(4).toString();
+                                if ("".equals(money) || money.startsWith("0")) {
+                                    mData.add(bean);
+                                }
+                            }
+                        } else {
+                            mData.addAll(lists);
+                        }
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {

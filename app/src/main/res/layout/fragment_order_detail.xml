@@ -161,7 +161,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="right"
-                        android:text="张三"
+                        android:text="--"
                         android:textColor="@color/word_black"
                         android:textSize="14sp"/>
                 </LinearLayout>
@@ -342,11 +342,12 @@
                     android:textColor="@color/word_gray"
                     android:textSize="14sp"/>
 
-                <TextView
-                    android:id="@+id/tv_use"
+                <EditText
+                    android:id="@+id/et_use"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
+                    android:background="@null"
                     android:gravity="center_vertical"
                     android:hint="--"
                     android:minHeight="30dp"
@@ -395,6 +396,14 @@
         android:layout_marginLeft="40dp"
         android:layout_marginTop="80dp"
         android:rotation="-45"
-        android:visibility="gone"
-        android:src="@drawable/icon_shenhe"/>
+        android:src="@drawable/icon_shenhe"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/img_noInt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp"
+        android:background="@color/white"
+        android:clickable="true"/>
 </RelativeLayout>

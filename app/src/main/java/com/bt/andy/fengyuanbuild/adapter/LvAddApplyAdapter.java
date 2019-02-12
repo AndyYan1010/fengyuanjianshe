@@ -1,7 +1,6 @@
 package com.bt.andy.fengyuanbuild.adapter;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -24,6 +23,7 @@ import com.bt.andy.fengyuanbuild.messegeInfo.SubListInfo;
 import com.bt.andy.fengyuanbuild.utils.Consts;
 import com.bt.andy.fengyuanbuild.utils.EditTextUtils;
 import com.bt.andy.fengyuanbuild.utils.PopupOpenHelper;
+import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.google.gson.Gson;
 
@@ -231,29 +231,35 @@ public class LvAddApplyAdapter extends BaseAdapter {
     }
 
     private void changeViewContent(final TextView tvcontent, final String title, final String writekind, final String whichkey) {
-        //弹出dailog展示修改内容
-        final EditText et = new EditText(mContext);
-        //写入数据
-        String oldContent = String.valueOf(tvcontent.getText());
-        et.setText(oldContent);
-        new AlertDialog.Builder(mContext).setView(et).setTitle(title)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //修改改变内容的textview
-                        String content = String.valueOf(et.getText()).trim();
-                        if ("search".equals(writekind)) {
-                            //为空，弹出选择菜单列表
-                            showMoreWriteInfo(tvcontent, title, content, whichkey);
-                        }
-                    }
-                }).setNegativeButton("取消", null).show();
+        if ("search".equals(writekind)) {
+            //为空，弹出选择菜单列表
+            showMoreWriteInfo(tvcontent, title, whichkey);
+        }
+
+
+        //        //弹出dailog展示修改内容
+        //        final EditText et = new EditText(mContext);
+        //        //写入数据
+        //        String oldContent = String.valueOf(tvcontent.getText());
+        //        et.setText(oldContent);
+        //        new AlertDialog.Builder(mContext).setView(et).setTitle(title)
+        //                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        //                    @Override
+        //                    public void onClick(DialogInterface dialogInterface, int i) {
+        //                        //修改改变内容的textview
+        //                        String content = String.valueOf(et.getText()).trim();
+        //                        if ("search".equals(writekind)) {
+        //                            //为空，弹出选择菜单列表
+        //                            showMoreWriteInfo(tvcontent, title, content, whichkey);
+        //                        }
+        //                    }
+        //                }).setNegativeButton("取消", null).show();
     }
 
     private LvShowMoreAdapter showMoreAdapter;
     private List<List>        mShowData;//临时存放内码
 
-    private void showMoreWriteInfo(final TextView tvcontent, String title, String content, final String whichkey) {
+    private void showMoreWriteInfo(final TextView tvcontent, String title, final String whichkey) {
         View view = View.inflate(mContext, R.layout.view_only_list, null);
         ListView lv_showmore = view.findViewById(R.id.lv_showmore);
         if (null == mShowData) {
@@ -293,6 +299,7 @@ public class LvAddApplyAdapter extends BaseAdapter {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            ProgressDialogUtil.startShow(mContext, "正在查找...");
         }
 
         @Override
@@ -359,6 +366,7 @@ public class LvAddApplyAdapter extends BaseAdapter {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            ProgressDialogUtil.hideDialog();
             if ("1".equals(s)) {
                 ToastUtils.showToast(mContext, "查询失败");
             }

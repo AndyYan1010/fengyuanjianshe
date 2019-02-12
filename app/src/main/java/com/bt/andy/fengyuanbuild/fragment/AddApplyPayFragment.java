@@ -1,7 +1,6 @@
 package com.bt.andy.fengyuanbuild.fragment;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -113,18 +112,11 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         tv_title.setText("新增付款申请单");
         tv_right.setText("添加");
         tv_zdr.setText(MyAppliaction.userName);
+        //记录标题头部信息
         mOrderDataInfo = new OrderDataInfo();
         mBankMap = new HashMap<>();
         mBankMap.put("bankNumber", "");
-        mBankMap.put("bankName", "");
-        //        Date dt = new Date();
-        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        //        mOrderDataInfo.getHeadData().put("djlx", "FKSQ005_SYS");
-        //        mOrderDataInfo.getHeadData().put("sqrq", sdf.format(dt));
-        //        mOrderDataInfo.getHeadData().put("bibie", "PRE001");
-        //        mOrderDataInfo.getHeadData().put("wldwlx", "BD_Empinfo");
-        //        mOrderDataInfo.getHeadData().put("skdwlx", "BD_Empinfo");
-        //        mOrderDataInfo.getHeadData().put("zuzhi", "100");
+        mBankMap.put("bankUserName", "");
         //初始化子表list
         initListView();
         img_back.setOnClickListener(this);
@@ -200,11 +192,12 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                                 "    \"StartRow\": 0,\"Limit\": 0}";
                         final List<List<Object>> lists = client.executeBillQuery(sqlSub);
                         mBankMap.put("bankNumber", lists.get(0).get(0).toString());
-                        mBankMap.put("bankName", lists.get(0).get(1).toString());
+                        mBankMap.put("bankUserName", lists.get(0).get(1).toString());
+                        //                        mBankMap.put("bankName", lists.get(0).get(1).toString());
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
-                                tv_wy.setText("".endsWith(mBankMap.get("bankName")) ? "未查找到网银" : mBankMap.get("bankName"));
+                                tv_wy.setText("".endsWith(mBankMap.get("bankUserName")) ? "未查找到网银" : mBankMap.get("bankUserName"));
                                 tv_wy.setText("".endsWith(mBankMap.get("bankNumber")) ? "未查找到网银" : mBankMap.get("bankNumber"));
                             }
                         });
@@ -255,21 +248,6 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 });
             }
         });
-
-        //        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), android.app.AlertDialog.THEME_HOLO_LIGHT);
-        //        builder.setMessage("您确定要关闭当前页面？");
-        //        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-        //
-        //            @Override
-        //            public void onClick(DialogInterface dialog, int which) {
-        //                MyFragmentManagerUtil.closeTopFragment(AddApplyPayFragment.this);
-        //            }
-        //        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-        //            @Override
-        //            public void onClick(DialogInterface dialog, int which) {
-        //                dialog.cancel();
-        //            }
-        //        }).create().show();
     }
 
     private void submitData() {
@@ -351,7 +329,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             subStr = "   {\"FCOSTID\": {\"FNUMBER\": \"" + mData.get(0).getFyTypeID() + "\"},\"F_ABC_Text1\": \"" + mData.get(0).getFyName() + "\"," +
                     "  \"FPAYPURPOSEID\": {\"FNumber\": \"SFKYT09_SYS\"},\"FENDDATE\": \"" + sdf.format(dt) + "\"," +
                     "  \"FEXPECTPAYDATE\": \"" + sdf.format(dt) + "\",\"FAPPLYAMOUNTFOR\": " + mData.get(0).getSqmoney() + "," +
-                    "  \"FEACHBANKACCOUNT\": \" \",\"FEACHCCOUNTNAME\": \" \",\"FEACHBANKNAME\": \" \"," +
+                    "  \"FEACHBANKACCOUNT\": \"" + mBankMap.get("bankNumber") + "\",\"FEACHCCOUNTNAME\": \"" + mBankMap.get("bankUserName") + "\",\"FEACHBANKNAME\": \" \"," +
                     "  \"FDescription\": \" \",\"F_ABC_Decimal2\": " + mData.get(0).getFnum() + ",\"F_ABC_Decimal\": " + mData.get(0).getFunit() + "," +
                     "  \"F_ABC_Decimal1\": " + mData.get(0).getFprice() + "}";
         } else {
@@ -359,7 +337,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 subStr = subStr + "   {\"FCOSTID\": {\"FNUMBER\": \"" + mData.get(0).getFyTypeID() + "\"},\"F_ABC_Text1\": \"" + mData.get(0).getFyName() + "\"," +
                         "  \"FPAYPURPOSEID\": {\"FNumber\": \"SFKYT09_SYS\"},\"FENDDATE\": \"" + sdf.format(dt) + "\"," +
                         "  \"FEXPECTPAYDATE\": \"" + sdf.format(dt) + "\",\"FAPPLYAMOUNTFOR\": " + mData.get(0).getSqmoney() + "," +
-                        "  \"FEACHBANKACCOUNT\": \"" + mBankMap.get("") + "\",\"FEACHCCOUNTNAME\": \"" + mBankMap.get("") + "\",\"FEACHBANKNAME\": \" \"," +
+                        "  \"FEACHBANKACCOUNT\": \"" + mBankMap.get("bankNumber") + "\",\"FEACHCCOUNTNAME\": \"" + mBankMap.get("bankUserName") + "\",\"FEACHBANKNAME\": \" \"," +
                         "  \"FDescription\": \" \",\"F_ABC_Decimal2\": " + mData.get(0).getFnum() + ",\"F_ABC_Decimal\": " + mData.get(0).getFunit() + "," +
                         "  \"F_ABC_Decimal1\": " + mData.get(0).getFprice() + "}";
                 if (i < mData.size() - 1) {
@@ -471,34 +449,40 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
     }
 
     private void changeViewContent(final TextView tvcontent, final String title, final String writekind, final String whichkey) {
-        //弹出dailog展示修改内容
-        final EditText et = new EditText(getContext());
-        //写入数据
-        String oldContent = String.valueOf(tvcontent.getText());
-        et.setText(oldContent);
-        new AlertDialog.Builder(getContext()).setView(et).setTitle(title)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //修改改变内容的textview
-                        String content = String.valueOf(et.getText()).trim();
-                        if (null == writekind || "".equals(writekind)) {
-                            tvcontent.setText(content);
-                            //mOrderDataInfo.getHeadData().put(whichkey, content);
-                        }
-                        if ("search".equals(writekind)) {
-                            //为空，弹出选择菜单列表
-                            showMoreWriteInfo(tvcontent, title, content, whichkey);
-                        }
-                    }
-                }).setNegativeButton("取消", null).show();
+        if ("search".equals(writekind)) {
+            //为空，弹出选择菜单列表
+            showMoreWriteInfo(tvcontent, title, whichkey);
+        }
+
+        //        //弹出dailog展示修改内容
+        //        final EditText et = new EditText(getContext());
+        //        //写入数据
+        //        String oldContent = String.valueOf(tvcontent.getText());
+        //        et.setText(oldContent);
+
+        //        new AlertDialog.Builder(getContext()).setView(et).setTitle(title)
+        //                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        //                    @Override
+        //                    public void onClick(DialogInterface dialogInterface, int i) {
+        //                        //修改改变内容的textview
+        //                        String content = String.valueOf(et.getText()).trim();
+        //                        if (null == writekind || "".equals(writekind)) {
+        //                            tvcontent.setText(content);
+        //                            //mOrderDataInfo.getHeadData().put(whichkey, content);
+        //                        }
+        //                        if ("search".equals(writekind)) {
+        //                            //为空，弹出选择菜单列表
+        //                            showMoreWriteInfo(tvcontent, title, whichkey);
+        //                        }
+        //                    }
+        //                }).setNegativeButton("取消", null).show();
     }
 
     private LvShowMoreAdapter showMoreAdapter;
     private List<List>        mShowData;//临时存放内码
     private OrderDataInfo     mOrderDataInfo;//整个订单表信息
 
-    private void showMoreWriteInfo(final TextView tvcontent, String title, String content, final String whichkey) {
+    private void showMoreWriteInfo(final TextView tvcontent, String title, final String whichkey) {
         View view = View.inflate(getContext(), R.layout.view_only_list, null);
         ListView lv_showmore = view.findViewById(R.id.lv_showmore);
         if (null == mShowData) {
