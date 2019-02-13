@@ -101,6 +101,11 @@ public class OrderListFragment extends Fragment {
                             middleSql = "FDOCUMENTSTATUS = 'B' and FCREATORID ='" + MyAppliaction.memID + "'";
                         } else if (2 == mType) {
                             middleSql = "FDOCUMENTSTATUS = 'B' ";
+                            if ("会计".equals(MyAppliaction.userType)) {
+
+                            } else if ("经理".equals(MyAppliaction.userType)) {
+
+                            }
                         } else if (3 == mType) {
                             middleSql = "FDOCUMENTSTATUS = 'C' and FCREATORID ='" + MyAppliaction.memID + "'";
                         } else if (4 == mType) {
