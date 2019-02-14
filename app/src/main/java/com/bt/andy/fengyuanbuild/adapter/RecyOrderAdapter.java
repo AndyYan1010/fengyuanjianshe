@@ -2,6 +2,8 @@ package com.bt.andy.fengyuanbuild.adapter;
 
 import android.content.Context;
 
+import com.bt.andy.fengyuanbuild.R;
+import com.bt.andy.fengyuanbuild.messegeInfo.StockInfo;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
@@ -16,7 +18,7 @@ import java.util.List;
  * @更新描述 ${TODO}
  */
 
-public class RecyOrderAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
+public class RecyOrderAdapter extends BaseQuickAdapter<StockInfo, BaseViewHolder> {
     private Context mContext;
 
     public RecyOrderAdapter(int layoutResId, Context context, List data) {
@@ -25,9 +27,12 @@ public class RecyOrderAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, final String item) {
-        //        (ImageView) helper.getView(R.id.img_call)
-        //        helper.setText(R.id.tv_place, item.getFhAddress() + "  →  " + item.getShAddress());
+    protected void convert(BaseViewHolder helper, final StockInfo item) {
+        helper.setText(R.id.tv_name, item.getFname());
+        helper.setText(R.id.tv_qcmoney, item.getFcqmoney());
+        helper.setText(R.id.tv_qmmoney, item.getFqmye());
+        helper.setText(R.id.tv_bqys, item.getFbqys());
+        helper.setText(R.id.tv_bqss, item.getFbqss());
 
     }
 }

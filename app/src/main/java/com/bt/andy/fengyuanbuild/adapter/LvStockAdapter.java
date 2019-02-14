@@ -51,6 +51,7 @@ public class LvStockAdapter extends BaseAdapter {
             viewHolder = new MyViewHolder();
             view = View.inflate(mContext, R.layout.lv_item_stock, null);
             viewHolder.tv_name = view.findViewById(R.id.tv_name);
+            viewHolder.tv_pici = view.findViewById(R.id.tv_pici);
             viewHolder.tv_address = view.findViewById(R.id.tv_address);
             viewHolder.tv_num = view.findViewById(R.id.tv_num);
             view.setTag(viewHolder);
@@ -59,12 +60,13 @@ public class LvStockAdapter extends BaseAdapter {
         }
         StockInfo stockInfo = mList.get(i);
         viewHolder.tv_name.setText(stockInfo.getFname());
-        viewHolder.tv_address.setText("仓库："+stockInfo.getAddress());
+        viewHolder.tv_pici.setText("批次："+stockInfo.getFpici());
+        viewHolder.tv_address.setText("仓库：" + stockInfo.getAddress());
         viewHolder.tv_num.setText("库存数量：" + stockInfo.getFqty());
         return view;
     }
 
     class MyViewHolder {
-        TextView tv_name, tv_address, tv_num;
+        TextView tv_name, tv_pici, tv_address, tv_num;
     }
 }

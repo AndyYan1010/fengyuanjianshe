@@ -32,9 +32,9 @@
                 android:id="@+id/tv_start"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:minHeight="35dp"
-                android:text="请选择日期"
+                android:hint="请选择日期"
                 android:textSize="14sp"/>
         </LinearLayout>
 
@@ -58,9 +58,9 @@
                 android:id="@+id/tv_end"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:minHeight="35dp"
-                android:text="请选择日期"
+                android:hint="请选择日期"
                 android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
@@ -90,11 +90,11 @@
 
             <TextView
                 android:id="@+id/tv_kehu"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:minHeight="35dp"
-                android:text="请选择客户"
+                android:text="选择客户"
                 android:textSize="14sp"/>
         </LinearLayout>
 

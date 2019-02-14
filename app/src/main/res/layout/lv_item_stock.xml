@@ -11,20 +11,41 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_name"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/white"
-            android:gravity="center"
-            android:text="熊猫电视机24寸"
-            android:textColor="@color/vm_black_100"
-            android:textSize="18sp"/>
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:minHeight="30dp"
+                android:text="熊猫电视机24寸"
+                android:textColor="@color/vm_black_100"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tv_pici"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:minHeight="30dp"
+                android:text="批次：20190102"
+                android:textColor="@color/orange"
+                android:textSize="16sp"/>
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:background="@color/white"
+            android:minHeight="25dp"
             android:paddingTop="3dp">
 
             <TextView
@@ -33,8 +54,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:text="黄山仓"
-                android:textColor="@color/vm_black_100"
-                android:textSize="18sp"/>
+                android:textColor="@color/blue_icon"
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/tv_num"
@@ -43,8 +64,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
                 android:text="库存数量:100"
-                android:textColor="@color/vm_black_100"
-                android:textSize="16sp"/>
+                android:textColor="@color/green"
+                android:textSize="14sp"/>
         </RelativeLayout>
     </LinearLayout>
 

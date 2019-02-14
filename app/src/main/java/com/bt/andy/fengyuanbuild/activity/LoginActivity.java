@@ -1,6 +1,7 @@
 package com.bt.andy.fengyuanbuild.activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,12 +15,16 @@ import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
 import com.bt.andy.fengyuanbuild.messegeInfo.LoginDetailInfo;
 import com.bt.andy.fengyuanbuild.utils.Consts;
+import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
+import com.bt.andy.fengyuanbuild.utils.SoapUtil;
 import com.bt.andy.fengyuanbuild.utils.SpUtils;
 import com.bt.andy.fengyuanbuild.utils.ThreadUtils;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import kingdee.bos.webapi.client.K3CloudApiClient;
 
@@ -89,12 +94,70 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     ToastUtils.showToast(LoginActivity.this, "请输入密码");
                     return;
                 }
-                number = "席会计";
-                pass = "123456";
+                //number = "席会计";
+                //pass = "123456";
                 //是否记住账号密码
                 isNeedRem(number, pass);
-                loginFun(number, pass);
+                //冯源建设
+                //loginFun(number, pass);
+                //常州天宏
+//                loginFunCZ(number, pass);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
                 break;
+        }
+    }
+
+    private void loginFunCZ(String number, String pass) {
+        new LoginTask(number, pass).execute();
+    }
+
+    class LoginTask extends AsyncTask<Void, String, String> {
+        String username;
+        String password;
+
+        LoginTask(String username, String password) {
+            this.username = username;
+            this.password = password;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogUtil.startShow(LoginActivity.this, "正在登录，请稍后...");
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            Map<String, String> map = new HashMap<>();
+            map.put("UserName", username);
+            map.put("PassWord", password);
+            return SoapUtil.requestWebService(Consts.Login, map);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ProgressDialogUtil.hideDialog();
+            if (s.contains("成功")) {
+                String[] split = s.split("/");
+                String sId = split[0];
+                String userid = sId.substring(2, sId.length());
+                MyAppliaction.userID = userid;//用户id
+                MyAppliaction.memID = username;//工号
+                if (split.length >= 2) {
+                    MyAppliaction.userName = split[1];//用户姓名
+                } else {
+                    MyAppliaction.userName = "";//用户姓名
+                    ToastUtils.showToast(LoginActivity.this, "系统中未填写姓名");
+                }
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                ToastUtils.showToast(LoginActivity.this, "登陆成功");
+                finish();
+            } else {
+                ToastUtils.showToast(LoginActivity.this, "登陆失败");
+            }
         }
     }
 

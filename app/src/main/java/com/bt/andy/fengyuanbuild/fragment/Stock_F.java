@@ -302,7 +302,6 @@ public class Stock_F extends Fragment implements View.OnClickListener {
                     stockInfo.setAddress(map.get("fname1"));//哪个仓库
                     String fqty = map.get("fqty");//数量（库存量）
                     double num = Double.parseDouble(fqty);
-                    sum = sum + num;
                     stockInfo.setFqty(df.format(num));
                     mStockInfos.add(stockInfo);
                 }

@@ -25,6 +25,7 @@ import com.bt.andy.fengyuanbuild.messegeInfo.StockInfo;
 import com.bt.andy.fengyuanbuild.myTools.DropBean;
 import com.bt.andy.fengyuanbuild.myTools.DropdownButton;
 import com.bt.andy.fengyuanbuild.utils.Consts;
+import com.bt.andy.fengyuanbuild.utils.MyNumUtils;
 import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
 import com.bt.andy.fengyuanbuild.utils.SoapUtil;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
@@ -159,12 +160,15 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
     }
 
     private void writeGoodsStock(String fnumber) {
+        System.out.println(fnumber);
         if (null != linear_drop) {
             linear_drop.setVisibility(View.INVISIBLE);
         }
         //访问网络，获取详情
         //根据扫描的代码查询
-        String sql2 = "select b.fnumber,b.fname,c.fnumber,c.fname,a.FQty,b.FGoodsBarCode from ICInventory a inner join t_ICItem b on a.FItemID=b.FItemID inner join t_Stock c on c.fitemid=a.FStockID  where b.FGoodsBarCode='" + fnumber + "' or b.fnumber='" + fnumber + "'";
+        //String sql2 = "select b.fnumber,b.fname,c.fnumber,c.fname,a.FQty,b.FGoodsBarCode from ICInventory a inner join t_ICItem b on a.FItemID=b.FItemID inner join t_Stock c on c.fitemid=a.FStockID  where b.FGoodsBarCode='" + fnumber + "' or b.fnumber='" + fnumber + "'";
+        String sql2 = "select b.fnumber,b.fname,b.FHelpCode,c.fname,a.fqty,a.fbatchno  from icinventory a inner join t_icitem b on a.fitemid=b.fitemid inner join t_stock c on c.fitemid=a.fstockid where b.fnumber ='" + fnumber + "'";
+
         //根据助记码或者名称模糊查询
         new ItemTask(sql2).execute();
     }
@@ -199,7 +203,6 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
                 } else {
                     mStockInfos.clear();
                 }
-                double sum = 0;
                 DecimalFormat df = new DecimalFormat(".00");
                 Document doc = DocumentHelper.parseText(s);
                 Element ele = doc.getRootElement();
@@ -207,16 +210,15 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
                 HashMap<String, String> map = new HashMap<>();
                 while (iter.hasNext()) {
                     Element recordEle = (Element) iter.next();
+                    map.put("fbatchno", recordEle.elementTextTrim("fbatchno"));//批次
                     map.put("fname", recordEle.elementTextTrim("fname"));//物料名称
-                    map.put("fqty", recordEle.elementTextTrim("FQty"));//库存数量
+                    map.put("fqty", recordEle.elementTextTrim("fqty"));//库存数量
                     map.put("fname1", recordEle.elementTextTrim("fname1"));//仓库
                     StockInfo stockInfo = new StockInfo();
+                    stockInfo.setFpici(map.get("fbatchno"));//批次
                     stockInfo.setFname(map.get("fname"));//名称
                     stockInfo.setAddress(map.get("fname1"));//哪个仓库
-                    String fqty = map.get("fqty");//数量（库存量）
-                    double num = Double.parseDouble(fqty);
-                    sum = sum + num;
-                    stockInfo.setFqty(df.format(num));
+                    stockInfo.setFqty(df.format(MyNumUtils.getDoubleNum(map.get("fqty"))));
                     mStockInfos.add(stockInfo);
                 }
                 if (mStockInfos.size() > 0) {
@@ -228,7 +230,7 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
                 stockAdapter.notifyDataSetChanged();
             } catch (Exception e) {
                 e.printStackTrace();
-                ToastUtils.showToast(getContext(), "查询出错,未查到此商品");
+                ToastUtils.showToast(getContext(), "Tips:未查到此商品");
             }
             ProgressDialogUtil.hideDialog();
         }
@@ -249,7 +251,8 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
 
         @Override
         protected String doInBackground(Void... voids) {
-            String sql = "select fnumber,fname from t_icitem where FHelpCode like'%" + text + "%' or fname like '%" + text + "%' or FGoodsBarCode like '%" + text + "%'";
+            //            String sql = "select fnumber,fname from t_icitem where FHelpCode like'%" + text + "%' or fname like '%" + text + "%' or FGoodsBarCode like '%" + text + "%'";
+            String sql = "select fnumber,fname from t_icitem where  FName like '%" + text + "%' or FNumber like '%" + text + "%'";
             Map<String, String> map = new HashMap<>();
             map.put("FSql", sql);
             map.put("FTable", "t_icitem");
@@ -295,6 +298,7 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
             }
         }
     }
+
     //关闭输入法
     private void hintKeyBoard(EditText et) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
