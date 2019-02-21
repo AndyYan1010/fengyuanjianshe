@@ -29,7 +29,7 @@ public class RecyNoOutStockAdapter extends BaseQuickAdapter<StockInfo, BaseViewH
     @Override
     protected void convert(BaseViewHolder helper, StockInfo item) {
         helper.setText(R.id.tv_billno, item.getFbill());
-        helper.setText(R.id.tv_date, item.getFdate());
+        helper.setText(R.id.tv_date, item.getFdate().substring(0,9));
         helper.setText(R.id.tv_cusname, item.getFcusname());
         helper.setText(R.id.tv_goodsname, item.getFname());
         helper.setText(R.id.tv_unit, item.getFunit());

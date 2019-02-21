@@ -167,7 +167,7 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
         //访问网络，获取详情
         //根据扫描的代码查询
         //String sql2 = "select b.fnumber,b.fname,c.fnumber,c.fname,a.FQty,b.FGoodsBarCode from ICInventory a inner join t_ICItem b on a.FItemID=b.FItemID inner join t_Stock c on c.fitemid=a.FStockID  where b.FGoodsBarCode='" + fnumber + "' or b.fnumber='" + fnumber + "'";
-        String sql2 = "select b.fnumber,b.fname,b.FHelpCode,c.fname,a.fqty,a.fbatchno  from icinventory a inner join t_icitem b on a.fitemid=b.fitemid inner join t_stock c on c.fitemid=a.fstockid where b.fnumber ='" + fnumber + "'";
+        String sql2 = "select b.fnumber,b.fname,b.FHelpCode,c.fname,d.fname,a.fqty,a.fbatchno  from icinventory a inner join t_icitem b on a.fitemid=b.fitemid inner join t_stock c on c.fitemid=a.fstockid inner join t_MeasureUnit d on d.fitemid=b.FUnitID where b.fnumber ='" + fnumber + "'";
 
         //根据助记码或者名称模糊查询
         new ItemTask(sql2).execute();
@@ -214,10 +214,12 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
                     map.put("fname", recordEle.elementTextTrim("fname"));//物料名称
                     map.put("fqty", recordEle.elementTextTrim("fqty"));//库存数量
                     map.put("fname1", recordEle.elementTextTrim("fname1"));//仓库
+                    map.put("fname2", recordEle.elementTextTrim("fname2"));//单位
                     StockInfo stockInfo = new StockInfo();
                     stockInfo.setFpici(map.get("fbatchno"));//批次
                     stockInfo.setFname(map.get("fname"));//名称
                     stockInfo.setAddress(map.get("fname1"));//哪个仓库
+                    stockInfo.setFunit(map.get("fname2"));//货物单位
                     stockInfo.setFqty(df.format(MyNumUtils.getDoubleNum(map.get("fqty"))));
                     mStockInfos.add(stockInfo);
                 }
@@ -252,7 +254,8 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
         @Override
         protected String doInBackground(Void... voids) {
             //            String sql = "select fnumber,fname from t_icitem where FHelpCode like'%" + text + "%' or fname like '%" + text + "%' or FGoodsBarCode like '%" + text + "%'";
-            String sql = "select fnumber,fname from t_icitem where  FName like '%" + text + "%' or FNumber like '%" + text + "%'";
+            String sql = "select fnumber,fname,fhelpCode from t_icitem where  FName like '%" + text + "%' or FNumber like '%" + text + "%'";
+            //            String sql = "select fnumber,fname,fhelpCode from t_icitem ";
             Map<String, String> map = new HashMap<>();
             map.put("FSql", sql);
             map.put("FTable", "t_icitem");
@@ -276,6 +279,7 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
                     Element recordEle = (Element) iter.next();
                     map.put("fnumber", recordEle.elementTextTrim("fnumber"));//物料条码
                     map.put("fname", recordEle.elementTextTrim("fname"));//物料名称
+                    map.put("fhelpCode", recordEle.elementTextTrim("fhelpCode"));//物料规格
                     mHTot.add(map);
                 }
                 //填充数据到页面
@@ -288,7 +292,8 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
                 mGoodsNameList.add(new DropBean("请选择查询结果"));
                 for (HashMap<String, String> map : mHTot) {
                     String fname = map.get("fname");
-                    mGoodsNameList.add(new DropBean(fname));
+                    String fhelpCode = map.get("fhelpCode");
+                    mGoodsNameList.add(new DropBean(fname + "    规格：" + fhelpCode));
                 }
                 downbt.setData(mGoodsNameList);
                 downbt.setChecked(true);

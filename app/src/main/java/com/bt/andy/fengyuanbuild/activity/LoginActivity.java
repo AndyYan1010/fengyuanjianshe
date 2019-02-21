@@ -13,6 +13,7 @@ import com.bt.andy.fengyuanbuild.BaseActivity;
 import com.bt.andy.fengyuanbuild.MainActivity;
 import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
+import com.bt.andy.fengyuanbuild.messegeInfo.AccountMemberInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.LoginDetailInfo;
 import com.bt.andy.fengyuanbuild.utils.Consts;
 import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
@@ -99,11 +100,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 //是否记住账号密码
                 isNeedRem(number, pass);
                 //冯源建设
-                //loginFun(number, pass);
+                loginFun(number, pass);
                 //常州天宏
-//                loginFunCZ(number, pass);
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+                //                loginFunCZ(number, pass);
+                //                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                //                startActivity(intent);
                 break;
         }
     }
@@ -188,6 +189,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         Gson gson = new Gson();
                         LoginDetailInfo loginDetailInfo = gson.fromJson(bd_empinfo, LoginDetailInfo.class);
                         MyAppliaction.memID = "" + loginDetailInfo.getResult().getResult().getId();
+                        MyAppliaction.userAccount = loginDetailInfo.getResult().getResult().getUserAccount();
+                        //获取员工的银行账号信息
+                        getUserBackInfo(MyAppliaction.userAccount);
                         List<?> fDescription = loginDetailInfo.getResult().getResult().getFDescription();
                         //从描述中获取账号权限
                         if (fDescription.size() > 0) {
@@ -214,6 +218,43 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         @Override
                         public void run() {
                             ToastUtils.showToast(LoginActivity.this, "登录失败！");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void getUserBackInfo(String userAccount) {
+        ThreadUtils.runOnSubThread(new Runnable() {
+            @Override
+            public void run() {
+                Boolean result;
+                K3CloudApiClient client = new K3CloudApiClient(Consts.K3CloudURL);
+                try {
+                    result = client.login(Consts.dbId, MyAppliaction.userName, MyAppliaction.userpswd, Consts.lang);
+                    if (result) {
+                        //查询网银
+                        String sqlSub = "{\"CreateOrgId\": 0,\"Number\": \"" + MyAppliaction.userAccount + "\",\"Id\": \"\"}";
+                        String bd_empinfo = client.view("BD_Empinfo", sqlSub);
+                        Gson gson = new Gson();
+                        AccountMemberInfo accountMemberInfo = gson.fromJson(bd_empinfo, AccountMemberInfo.class);
+                        MyAppliaction.bankNumber = accountMemberInfo.getResult().getResult().getEmpinfoBank().get(0).getBankCode();
+                        MyAppliaction.bankUserName = accountMemberInfo.getResult().getResult().getEmpinfoBank().get(0).getBankHolder();
+                    } else {
+                        ThreadUtils.runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtils.showToast(LoginActivity.this, "未查找到对应网银");
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ThreadUtils.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.showToast(LoginActivity.this, "未查找到对应网银");
                         }
                     });
                 }

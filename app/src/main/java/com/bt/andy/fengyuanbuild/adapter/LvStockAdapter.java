@@ -60,9 +60,9 @@ public class LvStockAdapter extends BaseAdapter {
         }
         StockInfo stockInfo = mList.get(i);
         viewHolder.tv_name.setText(stockInfo.getFname());
-        viewHolder.tv_pici.setText("批次："+stockInfo.getFpici());
+        viewHolder.tv_pici.setText("批次：" + stockInfo.getFpici());
         viewHolder.tv_address.setText("仓库：" + stockInfo.getAddress());
-        viewHolder.tv_num.setText("库存数量：" + stockInfo.getFqty());
+        viewHolder.tv_num.setText("库存数量：" + stockInfo.getFqty() + "  " + stockInfo.getFunit());
         return view;
     }
 

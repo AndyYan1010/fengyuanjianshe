@@ -188,7 +188,7 @@ public class OrderListFragment extends Fragment {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //查看详情
                 SearchOrderDetailFragment orderDetailFt = new SearchOrderDetailFragment();
-                orderDetailFt.setOrderNo(mData.get(position).get(1).toString(), mData.get(position).get(2).toString());
+                orderDetailFt.setOrderNo(mData.get(position).get(1).toString(), mData.get(position).get(2).toString(),mType);
                 FragmentTransaction ftt = getActivity().getSupportFragmentManager().beginTransaction();
                 ftt.add(R.id.frame, orderDetailFt, "orderDetailFt");
                 ftt.addToBackStack("orderDetailFt");

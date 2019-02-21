@@ -96,6 +96,10 @@ public class NoOutStockListFragment extends Fragment implements View.OnClickList
     private void initRecyList() {
         mData = new ArrayList();
         recyview.setLayoutManager(new LinearLayoutManager(getContext()));
+        //解决数据加载完成后, 没有停留在顶部的问题
+        recyview.setNestedScrollingEnabled(false);
+        recyview.setHasFixedSize(true);
+        recyview.setFocusable(false);
         noOutStockAdapter = new RecyNoOutStockAdapter(getContext(), mData, R.layout.recy_noout_item);
         recyview.setAdapter(noOutStockAdapter);
     }
@@ -105,8 +109,9 @@ public class NoOutStockListFragment extends Fragment implements View.OnClickList
         String sql2 = "select a.fbillno,a.fdate,d.fname,c.fname,b.fauxqty,e.fname from seorder a inner join seorderentry b on a.finterid=b.finterid inner join t_icitem c on c.fitemid=b.fitemid" +
                 " inner join t_organization d on d.fitemid=a.fcustid inner join t_measureunit e on e.fitemid=c.funitid  where a.fclosed=0 and b.fmrpclosed=0";
 
-        String sql="select a.fbillno,a.fdate,d.fname,c.fname,b.fauxqty,e.fname from seorder a inner join seorderentry b on a.finterid=b.finterid inner join t_icitem c on c.fitemid=b.fitemid" +
+        String sql = "select a.fbillno,a.fdate,d.fname,c.fname,b.fauxqty,e.fname from seorder a inner join seorderentry b on a.finterid=b.finterid inner join t_icitem c on c.fitemid=b.fitemid" +
                 " inner join t_organization d on d.fitemid=a.fcustid inner join t_measureunit e on e.fitemid=c.funitid  where a.fclosed=0 and b.fmrpclosed=0";
+        //        String sql = "select  * from z_seorder";
         //根据助记码或者名称模糊查询
         new ItemTask(sql).execute();
     }
@@ -122,6 +127,11 @@ public class NoOutStockListFragment extends Fragment implements View.OnClickList
         protected void onPreExecute() {
             super.onPreExecute();
             ProgressDialogUtil.startShow(getContext(), "正在查找,请稍等...");
+            if (null == mData) {
+                mData = new ArrayList();
+            } else {
+                mData.clear();
+            }
         }
 
         @Override

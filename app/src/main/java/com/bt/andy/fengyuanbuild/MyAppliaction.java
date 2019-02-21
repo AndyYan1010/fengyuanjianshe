@@ -25,7 +25,10 @@ public class MyAppliaction extends Application {
     public static String userpswd;//密码
     public static String memID;//操作员ID
     public static String userType;//用户(描述)类别  //员工，会计，经理
-    //下面暂未用到
+    public static String userAccount;//用户账号
+    public static String bankNumber;//用户网银内码
+    public static String bankUserName;//用户网银名称
+    //冯源中暂未用到
     public static String userID;//用户id
 
     @Override

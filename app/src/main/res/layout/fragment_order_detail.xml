@@ -292,36 +292,36 @@
                     android:textSize="14sp"/>
             </LinearLayout>
 
-            <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="1px"-->
-            <!--android:background="@color/vm_black_87"/>-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/vm_black_87"/>
 
-            <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="center_vertical"-->
-            <!--android:orientation="horizontal">-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:text="网银："-->
-            <!--android:textColor="@color/word_gray"-->
-            <!--android:textSize="14sp"/>-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="网银："
+                    android:textColor="@color/word_gray"
+                    android:textSize="14sp"/>
 
-            <!--<EditText-->
-            <!--android:id="@+id/et_wy"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginRight="10dp"-->
-            <!--android:gravity="center_vertical"-->
-            <!--android:hint="请填写"-->
-            <!--android:minHeight="30dp"-->
-            <!--android:textColor="@color/word_black"-->
-            <!--android:textSize="14sp"/>-->
-            <!--</LinearLayout>-->
+                <TextView
+                    android:id="@+id/tv_wy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center_vertical"
+                    android:hint="--"
+                    android:minHeight="30dp"
+                    android:textColor="@color/word_black"
+                    android:textSize="14sp"/>
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -400,10 +400,21 @@
         android:visibility="gone"/>
 
     <ImageView
+        android:id="@+id/img_ybx"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="160dp"
+        android:rotation="-45"
+        android:src="@drawable/icon_yibaoxiao"
+        android:visibility="gone"/>
+
+    <ImageView
         android:id="@+id/img_noInt"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="45dp"
         android:background="@color/white"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:visibility="gone"/>
 </RelativeLayout>

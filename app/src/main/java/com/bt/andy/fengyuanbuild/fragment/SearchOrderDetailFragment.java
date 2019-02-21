@@ -68,12 +68,14 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
     private TextView            tv_title;
     private TextView            tv_right;//驳回
     private ImageView           img_noInt;//网络连接动画
-    private ImageView           img_ysh;
+    private ImageView           img_ysh;//已审核图片
+    private ImageView           img_ybx;//已报销图片
     private TextView            tv_wl;
     private TextView            tv_dwlx;
     private TextView            tv_skdw;
     private TextView            tv_fplx;
     private TextView            tv_zdr;
+    private TextView            tv_wy;//网银
     private EditText            et_use;//用途
     private TextView            tv_submit;//审核
     private MyListView          lv_order;
@@ -81,6 +83,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
     private LvAddApplyAdapter   addApplyAdapter;
     private String              mOrderNo;//单号
     private String              mKind;//显示类别
+    private int                 mType;//显示审核类别
     private int                 mListType;//子表是否可点击//0不可点击，1可点击
     private Map<String, String> mBankMap;//银行卡号的信息
     private String              wlFnameid;//往来id
@@ -108,11 +111,13 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         tv_right = mRootView.findViewById(R.id.tv_right);
         img_noInt = mRootView.findViewById(R.id.img_noInt);
         img_ysh = mRootView.findViewById(R.id.img_ysh);
+        img_ybx = mRootView.findViewById(R.id.img_ybx);
         tv_wl = mRootView.findViewById(R.id.tv_wl);
         tv_dwlx = mRootView.findViewById(R.id.tv_dwlx);
         tv_skdw = mRootView.findViewById(R.id.tv_skdw);
         tv_fplx = mRootView.findViewById(R.id.tv_fplx);
         tv_zdr = mRootView.findViewById(R.id.tv_zdr);
+        tv_wy = mRootView.findViewById(R.id.tv_wy);
         et_use = mRootView.findViewById(R.id.et_use);
         lv_order = mRootView.findViewById(R.id.lv_order);
         tv_submit = mRootView.findViewById(R.id.tv_submit);
@@ -135,7 +140,12 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                 tv_submit.setVisibility(View.GONE);
             }
         } else if ("C".equals(mKind)) {
-            img_ysh.setVisibility(View.VISIBLE);
+            if (3 == mType) {//已审核
+                img_ysh.setVisibility(View.VISIBLE);
+            } else {//已报销
+                img_ysh.setVisibility(View.VISIBLE);
+                img_ybx.setVisibility(View.VISIBLE);
+            }
             tv_submit.setVisibility(View.GONE);
         } else {
             tv_submit.setVisibility(View.GONE);
@@ -146,10 +156,11 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         //获取付款申请单详情
         getOrderDetail();
         mBankMap = new HashMap<>();
-        mBankMap.put("bankNumber", "");
-        mBankMap.put("bankUserName", "");
+        mBankMap.put("bankNumber", null == MyAppliaction.bankNumber ? "" : MyAppliaction.bankNumber);
+        mBankMap.put("bankUserName", null == MyAppliaction.bankUserName ? "" : MyAppliaction.bankUserName);
+        tv_wy.setText("".equals(mBankMap.get("bankUserName")) ? "未查找到网银" : (mBankMap.get("bankUserName") + "：" + mBankMap.get("bankNumber")));
         //查询网银
-        searchBankNo();
+        //        searchBankNo();
         img_back.setOnClickListener(this);
         tv_right.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
@@ -448,51 +459,6 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         });
     }
 
-    private void searchBankNo() {
-        ThreadUtils.runOnSubThread(new Runnable() {
-            @Override
-            public void run() {
-                Boolean result;
-                K3CloudApiClient client = new K3CloudApiClient(Consts.K3CloudURL);
-                try {
-                    result = client.login(Consts.dbId, MyAppliaction.userName, MyAppliaction.userpswd, Consts.lang);
-                    if (result) {
-                        //查询网银
-                        String sqlSub = "{\"FormId\": \"CN_BANKACNT\",\"FieldKeys\": \"fnumber,fname\"," +
-                                "    \"FilterString\": \"FName='" + MyAppliaction.userName + "'\"," +
-                                "    \"OrderString\": \"\",\"TopRowCount\": 100," +
-                                "    \"StartRow\": 0,\"Limit\": 0}";
-                        final List<List<Object>> lists = client.executeBillQuery(sqlSub);
-                        mBankMap.put("bankNumber", lists.get(0).get(0).toString());
-                        mBankMap.put("bankUserName", lists.get(0).get(1).toString());
-                        ThreadUtils.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                //    tv_wy.setText("".endsWith(mBankMap.get("bankName")) ? "未查找到网银" : mBankMap.get("bankName"));
-                                //    tv_wy.setText("".endsWith(mBankMap.get("bankNumber")) ? "未查找到网银" : mBankMap.get("bankNumber"));
-                            }
-                        });
-                    } else {
-                        ThreadUtils.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtils.showToast(getContext(), "未查找到对应网银");
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    ThreadUtils.runOnMainThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToastUtils.showToast(getContext(), "未查找到对应网银");
-                        }
-                    });
-                }
-            }
-        });
-    }
-
     private void saveOrderInfo() {
         //获取最新的
         wlFnameid = mOrderDataInfo.getHeadData().get("wlFnameid");
@@ -522,7 +488,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             subStr = "   {\"FCOSTID\": {\"FNUMBER\": \"" + mData.get(0).getFyTypeID() + "\"},\"F_ABC_Text1\": \"" + mData.get(0).getFyName() + "\"," +
                     "  \"FPAYPURPOSEID\": {\"FNumber\": \"SFKYT09_SYS\"},\"FENDDATE\": \"" + sdf.format(dt) + "\"," +
                     "  \"FEXPECTPAYDATE\": \"" + sdf.format(dt) + "\",\"FAPPLYAMOUNTFOR\": " + mData.get(0).getSqmoney() + "," +
-                    "  \"FEACHBANKACCOUNT\": \"" + mBankMap.get("bankNumber") + "\",\"FEACHCCOUNTNAME\": \"" + mBankMap.get("bankUserName") + "\",\"FEACHBANKNAME\": \" \"," +
+                    "  \"FEACHBANKACCOUNT\": \"" + MyAppliaction.bankNumber + "\",\"FEACHCCOUNTNAME\": \"" + MyAppliaction.bankUserName + "\",\"FEACHBANKNAME\": \" \"," +
                     "  \"FDescription\": \" \",\"F_ABC_Decimal2\": " + mData.get(0).getFnum() + ",\"F_ABC_Decimal\": " + mData.get(0).getFunit() + "," +
                     "  \"F_ABC_Decimal1\": " + mData.get(0).getFprice() + "}";
         } else {
@@ -530,7 +496,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                 subStr = subStr + "   {\"FCOSTID\": {\"FNUMBER\": \"" + mData.get(0).getFyTypeID() + "\"},\"F_ABC_Text1\": \"" + mData.get(0).getFyName() + "\"," +
                         "  \"FPAYPURPOSEID\": {\"FNumber\": \"SFKYT09_SYS\"},\"FENDDATE\": \"" + sdf.format(dt) + "\"," +
                         "  \"FEXPECTPAYDATE\": \"" + sdf.format(dt) + "\",\"FAPPLYAMOUNTFOR\": " + mData.get(0).getSqmoney() + "," +
-                        "  \"FEACHBANKACCOUNT\": \"" + mBankMap.get("bankNumber") + "\",\"FEACHCCOUNTNAME\": \"" + mBankMap.get("bankUserName") + "\",\"FEACHBANKNAME\": \" \"," +
+                        "  \"FEACHBANKACCOUNT\": \"" + MyAppliaction.bankNumber + "\",\"FEACHCCOUNTNAME\": \"" + MyAppliaction.bankUserName + "\",\"FEACHBANKNAME\": \" \"," +
                         "  \"FDescription\": \" \",\"F_ABC_Decimal2\": " + mData.get(0).getFnum() + ",\"F_ABC_Decimal\": " + mData.get(0).getFunit() + "," +
                         "  \"F_ABC_Decimal1\": " + mData.get(0).getFprice() + "}";
                 if (i < mData.size() - 1) {
@@ -835,6 +801,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                                     try {
                                         mBankMap.put("bankNumber", fpayapplyentry.get(0).getFEACHBANKACCOUNT());
                                         mBankMap.put("bankUserName", fpayapplyentry.get(0).getFEACHCCOUNTNAME().get(0).getValue());
+                                        tv_wy.setText("".equals(mBankMap.get("bankUserName")) ? "未查找到网银" : (mBankMap.get("bankUserName") + "：" + mBankMap.get("bankNumber")));
                                     } catch (Exception e) {
                                     }
                                     addApplyAdapter.notifyDataSetChanged();
@@ -867,9 +834,10 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         });
     }
 
-    public void setOrderNo(String orderNo, String kind) {
+    public void setOrderNo(String orderNo, String kind, int type) {
         mOrderNo = orderNo;
         mKind = kind;
+        mType = type;
     }
 
     //查费用项目
@@ -949,5 +917,50 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             }
             showMoreAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void searchBankNo() {
+        ThreadUtils.runOnSubThread(new Runnable() {
+            @Override
+            public void run() {
+                Boolean result;
+                K3CloudApiClient client = new K3CloudApiClient(Consts.K3CloudURL);
+                try {
+                    result = client.login(Consts.dbId, MyAppliaction.userName, MyAppliaction.userpswd, Consts.lang);
+                    if (result) {
+                        //查询网银
+                        String sqlSub = "{\"FormId\": \"CN_BANKACNT\",\"FieldKeys\": \"fnumber,fname\"," +
+                                "    \"FilterString\": \"FName='" + MyAppliaction.userName + "'\"," +
+                                "    \"OrderString\": \"\",\"TopRowCount\": 100," +
+                                "    \"StartRow\": 0,\"Limit\": 0}";
+                        final List<List<Object>> lists = client.executeBillQuery(sqlSub);
+                        //                        mBankMap.put("bankNumber", lists.get(0).get(0).toString());
+                        //                        mBankMap.put("bankUserName", lists.get(0).get(1).toString());
+                        ThreadUtils.runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //    tv_wy.setText("".endsWith(mBankMap.get("bankName")) ? "未查找到网银" : mBankMap.get("bankName"));
+                                //    tv_wy.setText("".endsWith(mBankMap.get("bankNumber")) ? "未查找到网银" : mBankMap.get("bankNumber"));
+                            }
+                        });
+                    } else {
+                        ThreadUtils.runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtils.showToast(getContext(), "未查找到对应网银");
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ThreadUtils.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.showToast(getContext(), "未查找到对应网银");
+                        }
+                    });
+                }
+            }
+        });
     }
 }

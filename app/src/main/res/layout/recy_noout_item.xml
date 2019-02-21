@@ -37,12 +37,12 @@
                 android:minHeight="28dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="日期："
-                    android:textColor="@color/word_black"
-                    android:textSize="12sp"/>
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="日期："-->
+                    <!--android:textColor="@color/word_black"-->
+                    <!--android:textSize="12sp"/>-->
 
                 <TextView
                     android:id="@+id/tv_date"
