@@ -1,5 +1,7 @@
 package com.bt.andy.fengyuanbuild.messegeInfo;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public class SearchDetailInfo {
          * Result : {"Id":100024,"FBILLNo":"FKSQ000001","FDOCUMENTSTATUS":"C","FCREATORID_Id":100007,"FCREATORID":{"Id":100007,"Name":"席会计","UserAccount":"001"},"FAPPROVERID_Id":100007,"FAPPROVERID":{"Id":100007,"Name":"席会计","UserAccount":"001"},"FCREATEDATE":"2019-01-10T09:10:32.26","FSETTLEORGID_Id":1,"FSETTLEORGID":{"Id":1,"MultiLanguageText":[{"PkId":1,"LocaleId":2052,"Name":"上海冯源建设发展有限公司"},{"PkId":100001,"LocaleId":1033,"Name":" "},{"PkId":100002,"LocaleId":3076,"Name":" "}],"Name":[{"Key":2052,"Value":"上海冯源建设发展有限公司"},{"Key":1033,"Value":" "},{"Key":3076,"Value":" "}],"Number":"100"},"FAPPROVEDATE":"2019-01-10T09:10:37.9","FPURCHASEORGID_Id":0,"FPURCHASEORGID":null,"FPAYAMOUNTFOR_H":0,"FCURRENCYID_Id":1,"FCURRENCYID":{"Id":1,"msterID":1,"MultiLanguageText":[{"PkId":2,"LocaleId":2052,"Name":"人民币"}],"Name":[{"Key":2052,"Value":"人民币"}],"Number":"PRE001","Sysmbol":"¥","PriceDigits":6,"AmountDigits":2,"IsShowCSymbol":true,"FormatOrder":"1","RoundType":"1"},"FDATE":"2019-01-10T00:00:00","FMODIFYDATE":"2019-01-10T09:10:31.3","FMODIFIERID_Id":100007,"FMODIFIERID":{"Id":100007,"Name":"席会计","UserAccount":"001"},"FBILLTYPEID_Id":"00505694799c955111e327524dd878be","FBILLTYPEID":{"Id":"00505694799c955111e327524dd878be","MultiLanguageText":[{"PkId":"00505694799c955111e327524dd878bf","LocaleId":2052,"Name":"费用报销申请"}],"Name":[{"Key":2052,"Value":"费用报销申请"}],"Number":"FKSQ005_SYS"},"FPURCHASERID_Id":0,"FPURCHASERID":null,"FPURCHASEDEPTID_Id":0,"FPURCHASEDEPTID":null,"FPAYAPPLYAMOUNTFOR_H":2,"FACCOUNTSYSTEM_Id":0,"FACCOUNTSYSTEM":null,"FCANCELLERID_Id":0,"FCANCELLERID":null,"FCANCELSTATUS":"A","FCANCELDATE":null,"FCONTACTUNITTYPE":"BD_Empinfo","FCONTACTUNIT_Id":100024,"FCONTACTUNIT":{"Id":100024,"msterID":100024,"MultiLanguageText":[{"PkId":100001,"LocaleId":2052,"Name":"席会计"}],"Name":[{"Key":2052,"Value":"席会计"}],"Number":"001"},"FRECTUNITTYPE":"BD_Empinfo","FRECTUNIT_Id":100024,"FRECTUNIT":{"Id":100024,"msterID":100024,"MultiLanguageText":[{"PkId":100001,"LocaleId":2052,"Name":"席会计"}],"Name":[{"Key":2052,"Value":"席会计"}],"Number":"001"},"BUSINESSTYPE":"5","FDEPARTMENT_Id":0,"FDEPARTMENT":null,"FPAYORGID_Id":1,"FPAYORGID":{"Id":1,"MultiLanguageText":[{"PkId":1,"LocaleId":2052,"Name":"上海冯源建设发展有限公司"},{"PkId":100001,"LocaleId":1033,"Name":" "},{"PkId":100002,"LocaleId":3076,"Name":" "}],"Name":[{"Key":2052,"Value":"上海冯源建设发展有限公司"},{"Key":1033,"Value":" "},{"Key":3076,"Value":" "}],"Number":"100"},"FSALEORGID_Id":0,"FSALEORGID":null,"FSALEDEPTID_Id":0,"FSALEDEPTID":null,"FSALEERID_Id":0,"FSALEERID":null,"FMAINBOOKID_Id":1,"FMAINBOOKID":{"Id":1,"msterID":1,"MultiLanguageText":[{"PkId":2,"LocaleId":2052,"Name":"人民币"}],"Name":[{"Key":2052,"Value":"人民币"}],"Number":"PRE001","Sysmbol":"¥","PriceDigits":6,"AmountDigits":2,"IsShowCSymbol":true,"FormatOrder":"1","RoundType":"1"},"FEXCHANGERATE":1,"FEXCHANGETYPE_Id":1,"FEXCHANGETYPE":{"Id":1,"msterID":0,"MultiLanguageText":[{"PkId":1,"LocaleId":2052,"Name":"固定汇率"}],"Name":[{"Key":2052,"Value":"固定汇率"}],"Number":"HLTX01_SYS","Digits":4,"ReverseDigits":4},"SOURCESYSTEM":"0","FIsCredit":false,"FBankActID_Id":0,"FBankActID":null,"FAPPLYORGID_Id":1,"FAPPLYORGID":{"Id":1,"MultiLanguageText":[{"PkId":1,"LocaleId":2052,"Name":"上海冯源建设发展有限公司"},{"PkId":100001,"LocaleId":1033,"Name":" "},{"PkId":100002,"LocaleId":3076,"Name":" "}],"Name":[{"Key":2052,"Value":"上海冯源建设发展有限公司"},{"Key":1033,"Value":" "},{"Key":3076,"Value":" "}],"Number":"100"},"FScanPoint_Id":0,"FScanPoint":null,"CLOSESTATUS":"A","CLOSERID_Id":0,"CLOSERID":null,"FCLOSEDATE":null,"FSETTLECUR_Id":1,"FSETTLECUR":{"Id":1,"msterID":1,"MultiLanguageText":[{"PkId":2,"LocaleId":2052,"Name":"人民币"}],"Name":[{"Key":2052,"Value":"人民币"}],"Number":"PRE001","Sysmbol":"¥","PriceDigits":6,"AmountDigits":2,"IsShowCSymbol":true,"FormatOrder":"1","RoundType":"1"},"FREALAPPLYAMOUNTFOR":2,"FSETTLERATE":1,"FAPPLYAMOUNT":2,"PURCHASERGROUPID_Id":0,"PURCHASERGROUPID":null,"SALEGROUPID_Id":0,"SALEGROUPID":null,"IsBorrow":false,"F_ABC_Text":"444","F_ABC_Assistant_Id":"5c35a929441dd6","F_ABC_Assistant":{"Id":"5c35a929441dd6","FNumber":"02","MultiLanguageText":[{"PkId":"5c35a929441dd7","LocaleId":2052,"FDataValue":"未到 预付款"}],"FDataValue":[{"Key":2052,"Value":"未到 预付款"}]},"F_ABC_Text2":"","FPAYAPPLYENTRY":[{"Id":100023,"Seq":1,"FSETTLETYPEID_Id":0,"FSETTLETYPEID":null,"FPAYAMOUNTFOR":0,"FEACHBANKACCOUNT":"6222021001081006238","FAPPLYAMOUNTFOR":2,"FPAYPURPOSEID_Id":20019,"FPAYPURPOSEID":{"Id":20019,"MultiLanguageText":[{"PkId":21,"LocaleId":2052,"Name":"费用报销"}],"Name":[{"Key":2052,"Value":"费用报销"}],"Number":"SFKYT10_SYS","RECPAYTYPE":"1","BUSINESSTYPE":"3","FINMANEGEMENT":true},"FARPURPOSEID_Id":0,"FARPURPOSEID":null,"FSOURCETYPE":" ","FSRCBILLNO":" ","FENDDATE":"2019-01-10T00:00:00","FEXPECTPAYDATE":"2019-01-10T00:00:00","MultiLanguageText":[{"PkId":100023,"LocaleId":2052,"FEACHCCOUNTNAME":"宋金华","FEACHBANKNAME":"上海市工商银行七宝支行","FCOMMENT":" "}],"FEACHCCOUNTNAME":[{"Key":2052,"Value":"宋金华"}],"FEACHBANKNAME":[{"Key":2052,"Value":"上海市工商银行七宝支行"}],"FCOMMENT":[{"Key":2052,"Value":" "}],"FSRCROWID":0,"FRELATEPAYAMOUNT":2,"FRELATEREFUNDAMOUNT":0,"FCOSTID_Id":20046,"FCOSTID":{"Id":20046,"msterID":20046,"MultiLanguageText":[{"PkId":10003,"LocaleId":2052,"Name":"运费"}],"Name":[{"Key":2052,"Value":"运费"}],"Number":"FYXM02_SYS"},"FApplyPclAmount":0,"FApplyInstAmount":0,"FWritePclAmount":0,"Description":" ","FMATERIALID_Id":0,"FMATERIALID":null,"FPURCHASEORDERNO":" ","FMATERIALSEQ":0,"FORDERENTRYID":0,"PRICE":0,"QTY":0,"PRICEUNITID_Id":0,"PRICEUNITID":null,"FRELATEPAYQTY":0,"FUnpaidAmount":0,"SwiftCode":" ","TAXAMOUNT":0,"F_ABC_Text1":"申通","F_ABC_Decimal":2,"F_ABC_Decimal1":2,"F_ABC_Decimal2":1,"FPAYAPPLYENTRY_Link":[]}]}
          */
 
-        private Object ResponseStatus;
+        private Object     ResponseStatus;
         private ResultBean Result;
 
         public Object getResponseStatus() {
@@ -138,7 +140,7 @@ public class SearchDetailInfo {
              * FPAYAPPLYENTRY : [{"Id":100023,"Seq":1,"FSETTLETYPEID_Id":0,"FSETTLETYPEID":null,"FPAYAMOUNTFOR":0,"FEACHBANKACCOUNT":"6222021001081006238","FAPPLYAMOUNTFOR":2,"FPAYPURPOSEID_Id":20019,"FPAYPURPOSEID":{"Id":20019,"MultiLanguageText":[{"PkId":21,"LocaleId":2052,"Name":"费用报销"}],"Name":[{"Key":2052,"Value":"费用报销"}],"Number":"SFKYT10_SYS","RECPAYTYPE":"1","BUSINESSTYPE":"3","FINMANEGEMENT":true},"FARPURPOSEID_Id":0,"FARPURPOSEID":null,"FSOURCETYPE":" ","FSRCBILLNO":" ","FENDDATE":"2019-01-10T00:00:00","FEXPECTPAYDATE":"2019-01-10T00:00:00","MultiLanguageText":[{"PkId":100023,"LocaleId":2052,"FEACHCCOUNTNAME":"宋金华","FEACHBANKNAME":"上海市工商银行七宝支行","FCOMMENT":" "}],"FEACHCCOUNTNAME":[{"Key":2052,"Value":"宋金华"}],"FEACHBANKNAME":[{"Key":2052,"Value":"上海市工商银行七宝支行"}],"FCOMMENT":[{"Key":2052,"Value":" "}],"FSRCROWID":0,"FRELATEPAYAMOUNT":2,"FRELATEREFUNDAMOUNT":0,"FCOSTID_Id":20046,"FCOSTID":{"Id":20046,"msterID":20046,"MultiLanguageText":[{"PkId":10003,"LocaleId":2052,"Name":"运费"}],"Name":[{"Key":2052,"Value":"运费"}],"Number":"FYXM02_SYS"},"FApplyPclAmount":0,"FApplyInstAmount":0,"FWritePclAmount":0,"Description":" ","FMATERIALID_Id":0,"FMATERIALID":null,"FPURCHASEORDERNO":" ","FMATERIALSEQ":0,"FORDERENTRYID":0,"PRICE":0,"QTY":0,"PRICEUNITID_Id":0,"PRICEUNITID":null,"FRELATEPAYQTY":0,"FUnpaidAmount":0,"SwiftCode":" ","TAXAMOUNT":0,"F_ABC_Text1":"申通","F_ABC_Decimal":2,"F_ABC_Decimal1":2,"F_ABC_Decimal2":1,"FPAYAPPLYENTRY_Link":[]}]
              */
 
-            private int Id;
+            private int                      Id;
             private String                   FBILLNo;
             private String                   FDOCUMENTSTATUS;
             private int                      FCREATORID_Id;
@@ -220,6 +222,22 @@ public class SearchDetailInfo {
             private FABCAssistantBean        F_ABC_Assistant;
             private String                   F_ABC_Text2;
             private List<FPAYAPPLYENTRYBean> FPAYAPPLYENTRY;
+            /**
+             * F_ABC_Assistant1 : {"FDataValue":[{"Key":2052,"Value":"xx工程合同"}],"FNumber":"00001","Id":"5c3aa361b1774e","MultiLanguageText":[{"FDataValue":"xx工程合同","LocaleId":2052,"PkId":"5c3aa361b1774f"}]}
+             * F_ABC_Assistant1_Id : 5c3aa361b1774e
+             * F_ABC_Assistant2 : {"FDataValue":[{"Key":2052,"Value":"张工"}],"FNumber":"01","Id":"5c3aa38fb17752","MultiLanguageText":[{"FDataValue":"张工","LocaleId":2052,"PkId":"5c3aa38fb17753"}]}
+             * F_ABC_Assistant2_Id : 5c3aa38fb17752
+             * F_ABC_Assistant3 : {"FDataValue":[{"Key":2052,"Value":"公司内部"}],"FNumber":"02","Id":"5c769b8df744e4","MultiLanguageText":[{"FDataValue":"公司内部","LocaleId":2052,"PkId":"5c769b8df744e5"}]}
+             * F_ABC_Assistant3_Id : 5c769b8df744e4
+             */
+
+            private FABCAssistant1Bean       F_ABC_Assistant1;
+            private String                   F_ABC_Assistant1_Id;
+            private FABCAssistant2Bean       F_ABC_Assistant2;
+            private String                   F_ABC_Assistant2_Id;
+            private FABCAssistant3Bean       F_ABC_Assistant3;
+            private String                   F_ABC_Assistant3_Id;
+
 
             public int getId() {
                 return Id;
@@ -877,6 +895,54 @@ public class SearchDetailInfo {
                 this.FPAYAPPLYENTRY = FPAYAPPLYENTRY;
             }
 
+            public FABCAssistant1Bean getF_ABC_Assistant1() {
+                return F_ABC_Assistant1;
+            }
+
+            public void setF_ABC_Assistant1(FABCAssistant1Bean F_ABC_Assistant1) {
+                this.F_ABC_Assistant1 = F_ABC_Assistant1;
+            }
+
+            public String getF_ABC_Assistant1_Id() {
+                return F_ABC_Assistant1_Id;
+            }
+
+            public void setF_ABC_Assistant1_Id(String F_ABC_Assistant1_Id) {
+                this.F_ABC_Assistant1_Id = F_ABC_Assistant1_Id;
+            }
+
+            public FABCAssistant2Bean getF_ABC_Assistant2() {
+                return F_ABC_Assistant2;
+            }
+
+            public void setF_ABC_Assistant2(FABCAssistant2Bean F_ABC_Assistant2) {
+                this.F_ABC_Assistant2 = F_ABC_Assistant2;
+            }
+
+            public String getF_ABC_Assistant2_Id() {
+                return F_ABC_Assistant2_Id;
+            }
+
+            public void setF_ABC_Assistant2_Id(String F_ABC_Assistant2_Id) {
+                this.F_ABC_Assistant2_Id = F_ABC_Assistant2_Id;
+            }
+
+            public FABCAssistant3Bean getF_ABC_Assistant3() {
+                return F_ABC_Assistant3;
+            }
+
+            public void setF_ABC_Assistant3(FABCAssistant3Bean F_ABC_Assistant3) {
+                this.F_ABC_Assistant3 = F_ABC_Assistant3;
+            }
+
+            public String getF_ABC_Assistant3_Id() {
+                return F_ABC_Assistant3_Id;
+            }
+
+            public void setF_ABC_Assistant3_Id(String F_ABC_Assistant3_Id) {
+                this.F_ABC_Assistant3_Id = F_ABC_Assistant3_Id;
+            }
+
             public static class FCREATORIDBean {
                 /**
                  * Id : 100007
@@ -884,7 +950,7 @@ public class SearchDetailInfo {
                  * UserAccount : 001
                  */
 
-                private int Id;
+                private int    Id;
                 private String Name;
                 private String UserAccount;
 
@@ -920,7 +986,7 @@ public class SearchDetailInfo {
                  * UserAccount : 001
                  */
 
-                private int Id;
+                private int    Id;
                 private String Name;
                 private String UserAccount;
 
@@ -957,7 +1023,7 @@ public class SearchDetailInfo {
                  * Number : 100
                  */
 
-                private int Id;
+                private int                         Id;
                 private String                      Number;
                 private List<MultiLanguageTextBean> MultiLanguageText;
                 private List<NameBean>              Name;
@@ -1001,7 +1067,7 @@ public class SearchDetailInfo {
                      * Name : 上海冯源建设发展有限公司
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -1036,7 +1102,7 @@ public class SearchDetailInfo {
                      * Value : 上海冯源建设发展有限公司
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -1072,7 +1138,7 @@ public class SearchDetailInfo {
                  * RoundType : 1
                  */
 
-                private int Id;
+                private int                          Id;
                 private int                          msterID;
                 private String                       Number;
                 private String                       Sysmbol;
@@ -1179,7 +1245,7 @@ public class SearchDetailInfo {
                      * Name : 人民币
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -1214,7 +1280,7 @@ public class SearchDetailInfo {
                      * Value : 人民币
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -1242,7 +1308,7 @@ public class SearchDetailInfo {
                  * UserAccount : 001
                  */
 
-                private int Id;
+                private int    Id;
                 private String Name;
                 private String UserAccount;
 
@@ -1279,7 +1345,7 @@ public class SearchDetailInfo {
                  * Number : FKSQ005_SYS
                  */
 
-                private String Id;
+                private String                        Id;
                 private String                        Number;
                 private List<MultiLanguageTextBeanXX> MultiLanguageText;
                 private List<NameBeanXX>              Name;
@@ -1358,7 +1424,7 @@ public class SearchDetailInfo {
                      * Value : 费用报销申请
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -1388,7 +1454,7 @@ public class SearchDetailInfo {
                  * Number : 001
                  */
 
-                private int Id;
+                private int                            Id;
                 private int                            msterID;
                 private String                         Number;
                 private List<MultiLanguageTextBeanXXX> MultiLanguageText;
@@ -1441,7 +1507,7 @@ public class SearchDetailInfo {
                      * Name : 席会计
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -1476,7 +1542,7 @@ public class SearchDetailInfo {
                      * Value : 席会计
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -1506,7 +1572,7 @@ public class SearchDetailInfo {
                  * Number : 001
                  */
 
-                private int Id;
+                private int                             Id;
                 private int                             msterID;
                 private String                          Number;
                 private List<MultiLanguageTextBeanXXXX> MultiLanguageText;
@@ -1559,7 +1625,7 @@ public class SearchDetailInfo {
                      * Name : 席会计
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -1594,7 +1660,7 @@ public class SearchDetailInfo {
                      * Value : 席会计
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -1623,7 +1689,7 @@ public class SearchDetailInfo {
                  * Number : 100
                  */
 
-                private int Id;
+                private int                              Id;
                 private String                           Number;
                 private List<MultiLanguageTextBeanXXXXX> MultiLanguageText;
                 private List<NameBeanXXXXX>              Name;
@@ -1667,7 +1733,7 @@ public class SearchDetailInfo {
                      * Name : 上海冯源建设发展有限公司
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -1702,7 +1768,7 @@ public class SearchDetailInfo {
                      * Value : 上海冯源建设发展有限公司
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -1738,7 +1804,7 @@ public class SearchDetailInfo {
                  * RoundType : 1
                  */
 
-                private int Id;
+                private int                               Id;
                 private int                               msterID;
                 private String                            Number;
                 private String                            Sysmbol;
@@ -1845,7 +1911,7 @@ public class SearchDetailInfo {
                      * Name : 人民币
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -1880,7 +1946,7 @@ public class SearchDetailInfo {
                      * Value : 人民币
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -1912,7 +1978,7 @@ public class SearchDetailInfo {
                  * ReverseDigits : 4
                  */
 
-                private int Id;
+                private int                                Id;
                 private int                                msterID;
                 private String                             Number;
                 private int                                Digits;
@@ -1983,7 +2049,7 @@ public class SearchDetailInfo {
                      * Name : 固定汇率
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -2018,7 +2084,7 @@ public class SearchDetailInfo {
                      * Value : 固定汇率
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -2047,7 +2113,7 @@ public class SearchDetailInfo {
                  * Number : 100
                  */
 
-                private int Id;
+                private int                                 Id;
                 private String                              Number;
                 private List<MultiLanguageTextBeanXXXXXXXX> MultiLanguageText;
                 private List<NameBeanXXXXXXXX>              Name;
@@ -2091,7 +2157,7 @@ public class SearchDetailInfo {
                      * Name : 上海冯源建设发展有限公司
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -2126,7 +2192,7 @@ public class SearchDetailInfo {
                      * Value : 上海冯源建设发展有限公司
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -2162,7 +2228,7 @@ public class SearchDetailInfo {
                  * RoundType : 1
                  */
 
-                private int Id;
+                private int                                  Id;
                 private int                                  msterID;
                 private String                               Number;
                 private String                               Sysmbol;
@@ -2269,7 +2335,7 @@ public class SearchDetailInfo {
                      * Name : 人民币
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String Name;
 
@@ -2304,7 +2370,7 @@ public class SearchDetailInfo {
                      * Value : 人民币
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -2333,7 +2399,7 @@ public class SearchDetailInfo {
                  * FDataValue : [{"Key":2052,"Value":"未到 预付款"}]
                  */
 
-                private String Id;
+                private String                                Id;
                 private String                                FNumber;
                 private List<MultiLanguageTextBeanXXXXXXXXXX> MultiLanguageText;
                 private List<FDataValueBean>                  FDataValue;
@@ -2412,7 +2478,7 @@ public class SearchDetailInfo {
                      * Value : 未到 预付款
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -2483,7 +2549,7 @@ public class SearchDetailInfo {
                  * FPAYAPPLYENTRY_Link : []
                  */
 
-                private int Id;
+                private int                                      Id;
                 private int                                      Seq;
                 private int                                      FSETTLETYPEID_Id;
                 private Object                                   FSETTLETYPEID;
@@ -2909,7 +2975,7 @@ public class SearchDetailInfo {
                      * FINMANEGEMENT : true
                      */
 
-                    private int Id;
+                    private int                                    Id;
                     private String                                 Number;
                     private String                                 RECPAYTYPE;
                     private String                                 BUSINESSTYPE;
@@ -2980,7 +3046,7 @@ public class SearchDetailInfo {
                          * Name : 费用报销
                          */
 
-                        private int PkId;
+                        private int    PkId;
                         private int    LocaleId;
                         private String Name;
 
@@ -3015,7 +3081,7 @@ public class SearchDetailInfo {
                          * Value : 费用报销
                          */
 
-                        private int Key;
+                        private int    Key;
                         private String Value;
 
                         public int getKey() {
@@ -3045,7 +3111,7 @@ public class SearchDetailInfo {
                      * Number : FYXM02_SYS
                      */
 
-                    private int Id;
+                    private int                                     Id;
                     private int                                     msterID;
                     private String                                  Number;
                     private List<MultiLanguageTextBeanXXXXXXXXXXXX> MultiLanguageText;
@@ -3098,7 +3164,7 @@ public class SearchDetailInfo {
                          * Name : 运费
                          */
 
-                        private int PkId;
+                        private int    PkId;
                         private int    LocaleId;
                         private String Name;
 
@@ -3133,7 +3199,7 @@ public class SearchDetailInfo {
                          * Value : 运费
                          */
 
-                        private int Key;
+                        private int    Key;
                         private String Value;
 
                         public int getKey() {
@@ -3163,7 +3229,7 @@ public class SearchDetailInfo {
                      * FCOMMENT :
                      */
 
-                    private int PkId;
+                    private int    PkId;
                     private int    LocaleId;
                     private String FEACHCCOUNTNAME;
                     private String FEACHBANKNAME;
@@ -3216,7 +3282,7 @@ public class SearchDetailInfo {
                      * Value : 宋金华
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -3242,7 +3308,7 @@ public class SearchDetailInfo {
                      * Value : 上海市工商银行七宝支行
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -3268,7 +3334,7 @@ public class SearchDetailInfo {
                      * Value :
                      */
 
-                    private int Key;
+                    private int    Key;
                     private String Value;
 
                     public int getKey() {
@@ -3286,6 +3352,147 @@ public class SearchDetailInfo {
                     public void setValue(String Value) {
                         this.Value = Value;
                     }
+                }
+            }
+
+            public static class FABCAssistant1Bean {
+                /**
+                 * FDataValue : [{"Key":2052,"Value":"xx工程合同"}]
+                 * FNumber : 00001
+                 * Id : 5c3aa361b1774e
+                 * MultiLanguageText : [{"FDataValue":"xx工程合同","LocaleId":2052,"PkId":"5c3aa361b1774f"}]
+                 */
+
+                private String                                                  FNumber;
+                @SerializedName("Id")
+                private String                                                  IdX;
+                private List<FEXCHANGETYPEBean.NameBeanXXXXXXX>                 FDataValue;
+                private List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> MultiLanguageText;
+
+                public String getFNumber() {
+                    return FNumber;
+                }
+
+                public void setFNumber(String FNumber) {
+                    this.FNumber = FNumber;
+                }
+
+                public String getIdX() {
+                    return IdX;
+                }
+
+                public void setIdX(String IdX) {
+                    this.IdX = IdX;
+                }
+
+                public List<FEXCHANGETYPEBean.NameBeanXXXXXXX> getFDataValue() {
+                    return FDataValue;
+                }
+
+                public void setFDataValue(List<FEXCHANGETYPEBean.NameBeanXXXXXXX> FDataValue) {
+                    this.FDataValue = FDataValue;
+                }
+
+                public List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> getMultiLanguageText() {
+                    return MultiLanguageText;
+                }
+
+                public void setMultiLanguageText(List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> MultiLanguageText) {
+                    this.MultiLanguageText = MultiLanguageText;
+                }
+            }
+
+            public static class FABCAssistant2Bean {
+                /**
+                 * FDataValue : [{"Key":2052,"Value":"张工"}]
+                 * FNumber : 01
+                 * Id : 5c3aa38fb17752
+                 * MultiLanguageText : [{"FDataValue":"张工","LocaleId":2052,"PkId":"5c3aa38fb17753"}]
+                 */
+
+                private String                                                  FNumber;
+                @SerializedName("Id")
+                private String                                                  IdX;
+                private List<FEXCHANGETYPEBean.NameBeanXXXXXXX>                 FDataValue;
+                private List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> MultiLanguageText;
+
+                public String getFNumber() {
+                    return FNumber;
+                }
+
+                public void setFNumber(String FNumber) {
+                    this.FNumber = FNumber;
+                }
+
+                public String getIdX() {
+                    return IdX;
+                }
+
+                public void setIdX(String IdX) {
+                    this.IdX = IdX;
+                }
+
+                public List<FEXCHANGETYPEBean.NameBeanXXXXXXX> getFDataValue() {
+                    return FDataValue;
+                }
+
+                public void setFDataValue(List<FEXCHANGETYPEBean.NameBeanXXXXXXX> FDataValue) {
+                    this.FDataValue = FDataValue;
+                }
+
+                public List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> getMultiLanguageText() {
+                    return MultiLanguageText;
+                }
+
+                public void setMultiLanguageText(List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> MultiLanguageText) {
+                    this.MultiLanguageText = MultiLanguageText;
+                }
+            }
+
+            public static class FABCAssistant3Bean {
+                /**
+                 * FDataValue : [{"Key":2052,"Value":"公司内部"}]
+                 * FNumber : 02
+                 * Id : 5c769b8df744e4
+                 * MultiLanguageText : [{"FDataValue":"公司内部","LocaleId":2052,"PkId":"5c769b8df744e5"}]
+                 */
+
+                private String                                                  FNumber;
+                @SerializedName("Id")
+                private String                                                  IdX;
+                private List<FEXCHANGETYPEBean.NameBeanXXXXXXX>                 FDataValue;
+                private List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> MultiLanguageText;
+
+                public String getFNumber() {
+                    return FNumber;
+                }
+
+                public void setFNumber(String FNumber) {
+                    this.FNumber = FNumber;
+                }
+
+                public String getIdX() {
+                    return IdX;
+                }
+
+                public void setIdX(String IdX) {
+                    this.IdX = IdX;
+                }
+
+                public List<FEXCHANGETYPEBean.NameBeanXXXXXXX> getFDataValue() {
+                    return FDataValue;
+                }
+
+                public void setFDataValue(List<FEXCHANGETYPEBean.NameBeanXXXXXXX> FDataValue) {
+                    this.FDataValue = FDataValue;
+                }
+
+                public List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> getMultiLanguageText() {
+                    return MultiLanguageText;
+                }
+
+                public void setMultiLanguageText(List<FABCAssistantBean.MultiLanguageTextBeanXXXXXXXXXX> MultiLanguageText) {
+                    this.MultiLanguageText = MultiLanguageText;
                 }
             }
         }

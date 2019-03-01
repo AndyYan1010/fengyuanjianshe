@@ -160,7 +160,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="right"
-                        android:text="张三"
+                        android:text="--"
                         android:textColor="@color/word_black"
                         android:textSize="14sp"/>
                 </LinearLayout>
@@ -289,6 +289,99 @@
                     android:minHeight="30dp"
                     android:textColor="@color/word_black"
                     android:textSize="14sp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/vm_black_87"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="申请类型："
+                    android:textColor="@color/word_gray"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/tv_sqlx"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center_vertical|right"
+                    android:hint="点击选择"
+                    android:minHeight="30dp"
+                    android:textColor="@color/word_black"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/vm_black_87"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="30dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="合同编号："
+                        android:textColor="@color/word_gray"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/tv_htbh"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:text="请点击选择"
+                        android:textColor="@color/word_gray"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="施工队伍："
+                        android:textColor="@color/word_gray"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/tv_sgdw"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:hint="--"
+                        android:textColor="@color/word_black"
+                        android:textSize="14sp"/>
+                </LinearLayout>
             </LinearLayout>
 
             <View

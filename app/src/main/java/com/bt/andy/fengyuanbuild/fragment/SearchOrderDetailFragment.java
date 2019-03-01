@@ -24,6 +24,7 @@ import com.bt.andy.fengyuanbuild.adapter.LvAddApplyAdapter;
 import com.bt.andy.fengyuanbuild.adapter.LvShowMoreAdapter;
 import com.bt.andy.fengyuanbuild.messegeInfo.DeleteResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.FeiYongXMInfo;
+import com.bt.andy.fengyuanbuild.messegeInfo.HeTongBianHaoInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.OrderDataInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SaveForResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SearchDetailInfo;
@@ -74,6 +75,9 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
     private TextView            tv_dwlx;
     private TextView            tv_skdw;
     private TextView            tv_fplx;
+    private TextView            tv_sqlx;
+    private TextView            tv_htbh;
+    private TextView            tv_sgdw;
     private TextView            tv_zdr;
     private TextView            tv_wy;//网银
     private EditText            et_use;//用途
@@ -90,6 +94,9 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
     private String              skdwFnameid;//送款单位id
     private String              content_use;//用途说明
     private String              fplxFnameid;//发票类型id
+    private String              sqlxFnameid;//申请类型id
+    private String              htbhFnameid;//合同编号id
+    private String              sgdwFnameid;//施工队伍id
     private String              saveOrderNo;//提交后订单的单号
     private OrderDataInfo       mOrderDataInfo;//整个订单表信息
     private List<List>          mShowData;//临时存放内码
@@ -116,6 +123,9 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         tv_dwlx = mRootView.findViewById(R.id.tv_dwlx);
         tv_skdw = mRootView.findViewById(R.id.tv_skdw);
         tv_fplx = mRootView.findViewById(R.id.tv_fplx);
+        tv_sqlx = mRootView.findViewById(R.id.tv_sqlx);
+        tv_htbh = mRootView.findViewById(R.id.tv_htbh);
+        tv_sgdw = mRootView.findViewById(R.id.tv_sgdw);
         tv_zdr = mRootView.findViewById(R.id.tv_zdr);
         tv_wy = mRootView.findViewById(R.id.tv_wy);
         et_use = mRootView.findViewById(R.id.et_use);
@@ -167,6 +177,8 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         tv_wl.setOnClickListener(this);
         tv_skdw.setOnClickListener(this);
         tv_fplx.setOnClickListener(this);
+        tv_sqlx.setOnClickListener(this);
+        tv_htbh.setOnClickListener(this);
     }
 
     @Override
@@ -193,6 +205,12 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             case R.id.tv_fplx://发票类型
                 changeViewContent(tv_fplx, "发票类型", "search", "fplxFname");
                 break;
+            case R.id.tv_sqlx://申请类型
+                changeViewContent(tv_sqlx, "申请类型", "search", "sqlxFname");
+                break;
+            case R.id.tv_htbh://合同编号
+                changeViewContent(tv_htbh, "合同编号", "search", "htbhFname");
+                break;
             case R.id.tv_submit://提交审核
                 String check = String.valueOf(tv_submit.getText());
                 if ("审核".equals(check)) {
@@ -212,32 +230,9 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             //为空，弹出选择菜单列表
             showMoreWriteInfo(tvcontent, title, whichkey);
         }
-
-        //弹出dailog展示修改内容
-        //        final EditText et = new EditText(getContext());
-        //        //写入数据
-        //        String oldContent = String.valueOf(tvcontent.getText());
-        //        et.setText(oldContent);
-
-        //        new AlertDialog.Builder(getContext()).setView(et).setTitle(title)
-        //                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-        //                    @Override
-        //                    public void onClick(DialogInterface dialogInterface, int i) {
-        //                        //修改改变内容的textview
-        //                        String content = String.valueOf(et.getText()).trim();
-        //                        if (null == writekind || "".equals(writekind)) {
-        //                            tvcontent.setText(content);
-        //                            //mOrderDataInfo.getHeadData().put(whichkey, content);
-        //                        }
-        //                        if ("search".equals(writekind)) {
-        //                            //为空，弹出选择菜单列表
-        //                            showMoreWriteInfo(tvcontent, title, whichkey);
-        //                        }
-        //                    }
-        //                }).setNegativeButton("取消", null).show();
     }
 
-    private void showMoreWriteInfo(final TextView tvcontent, String title, final String whichkey) {
+    private void showMoreWriteInfo(final TextView tvcontent, final String title, final String whichkey) {
         View view = View.inflate(getContext(), R.layout.view_only_list, null);
         ListView lv_showmore = view.findViewById(R.id.lv_showmore);
         if (null == mShowData) {
@@ -260,6 +255,11 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                 if (null != whichkey && !"".equals(whichkey)) {
                     mOrderDataInfo.getHeadData().put(whichkey, mShowData.get(i).get(1).toString());
                     mOrderDataInfo.getHeadData().put(whichkey + "id", mShowData.get(i).get(0).toString());
+                    if ("合同编号".equals(title)) {
+                        mOrderDataInfo.getHeadData().put("sgdwFnameid", mShowData.get(i).get(2).toString());//number
+                        mOrderDataInfo.getHeadData().put("sgdwFname", mShowData.get(i).get(3).toString());//name
+                        tv_sgdw.setText(mShowData.get(i).get(3).toString());
+                    }
                 }
                 //做了修改
                 tv_submit.setText("保存");
@@ -277,8 +277,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             sql = "{\"FormId\":\"BD_Empinfo\",\"FieldKeys\":\"fnumber,fname\",\"FilterString\":\"\",\"OrderString\":\"\",\"TopRowCount\":1000,\"StartRow\":0,\"Limit\":0}";
         } else if ("费用项目".equals(title)) {
             //查询
-            AreaTask areaTask = new AreaTask();
-            areaTask.execute();
+            new AreaTask().execute();
             return;
         } else if ("发票类型".equals(title)) {
             List list1 = new ArrayList();
@@ -294,6 +293,21 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             mShowData.add(list2);
             mShowData.add(list3);
             showMoreAdapter.notifyDataSetChanged();
+            return;
+        } else if ("申请类型".equals(title)) {
+            List list1 = new ArrayList();
+            list1.add("01");
+            list1.add("公司外部");
+            List list2 = new ArrayList();
+            list2.add("02");
+            list2.add("公司内部");
+            mShowData.add(list1);
+            mShowData.add(list2);
+            showMoreAdapter.notifyDataSetChanged();
+            return;
+        } else if ("合同编号".equals(title)) {
+            ProgressDialogUtil.startShow(getContext(), "正在搜索...");
+            new ContractNumTask().execute();
             return;
         } else {
             sql = "";
@@ -476,6 +490,16 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             ToastUtils.showToast(getContext(), "请选择发票类型");
             return;
         }
+        sqlxFnameid = mOrderDataInfo.getHeadData().get("sqlxFnameid");
+        if (null == sqlxFnameid || "".equals(sqlxFnameid)) {
+            ToastUtils.showToast(getContext(), "请选择申请类型");
+            return;
+        }
+        htbhFnameid = mOrderDataInfo.getHeadData().get("htbhFnameid");
+        if (null == htbhFnameid | "".equals(htbhFnameid)) {
+            ToastUtils.showToast(getContext(), "请选择合同编号");
+            return;
+        }
         if (EditTextUtils.isEmpty(et_use, "--")) {
             ToastUtils.showToast(getContext(), "用途不能为空，请填写");
             return;
@@ -552,6 +576,9 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                 "        \"F_ABC_Assistant\": {" +
                 "            \"FNumber\": \"" + fplxFnameid + "\"" +
                 "        }," +
+                "\"F_ABC_Assistant1\": {" + " \"FNumber\": \"" + htbhFnameid + "\"" + " }," +
+                "\"F_ABC_Assistant2\": {" + " \"FNumber\": \"" + sgdwFnameid + "\"" + " }," +
+                "\"F_ABC_Assistant3\": {" + " \"FNumber\": \"" + sqlxFnameid + "\"" + " }," +
                 //明细
                 "        \"FPAYAPPLYENTRY\": [" + subStr + "]}}";
 
@@ -783,6 +810,21 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                                     tv_fplx.setText(searchDetailInfo.getResult().getResult().getF_ABC_Assistant().getFDataValue().get(0).getValue());
                                     fplxFnameid = searchDetailInfo.getResult().getResult().getF_ABC_Assistant().getFNumber();
                                     mOrderDataInfo.getHeadData().put("fplxFnameid", fplxFnameid);
+                                    if (null != searchDetailInfo.getResult().getResult().getF_ABC_Assistant3()) {
+                                        tv_sqlx.setText(searchDetailInfo.getResult().getResult().getF_ABC_Assistant3().getFDataValue().get(0).getValue());
+                                        sqlxFnameid = searchDetailInfo.getResult().getResult().getF_ABC_Assistant3().getFNumber();
+                                        mOrderDataInfo.getHeadData().put("sqlxFnameid", sqlxFnameid);
+                                    }
+                                    if (null != searchDetailInfo.getResult().getResult().getF_ABC_Assistant1()) {
+                                        tv_htbh.setText(searchDetailInfo.getResult().getResult().getF_ABC_Assistant1().getFDataValue().get(0).getValue());
+                                        htbhFnameid = searchDetailInfo.getResult().getResult().getF_ABC_Assistant1().getFNumber();
+                                        mOrderDataInfo.getHeadData().put("htbhFnameid", htbhFnameid);
+                                    }
+                                    if (null != searchDetailInfo.getResult().getResult().getF_ABC_Assistant2()) {
+                                        tv_sgdw.setText(searchDetailInfo.getResult().getResult().getF_ABC_Assistant2().getFDataValue().get(0).getValue());
+                                        sgdwFnameid = searchDetailInfo.getResult().getResult().getF_ABC_Assistant2().getFNumber();
+                                        mOrderDataInfo.getHeadData().put("sgdwFnameid", sgdwFnameid);
+                                    }
                                     et_use.setText(searchDetailInfo.getResult().getResult().getF_ABC_Text());
                                     content_use = searchDetailInfo.getResult().getResult().getF_ABC_Text();
 
@@ -918,6 +960,91 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
             showMoreAdapter.notifyDataSetChanged();
         }
     }
+
+    //查合同编号
+    private class ContractNumTask extends AsyncTask<Void, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (null == mShowData) {
+                mShowData = new ArrayList<>();
+            } else {
+                mShowData.clear();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            // 命名空间
+            String nameSpace = "http://tempuri.org/";
+            // 调用的方法名称
+            String methodName = "JA_LIST";
+            // EndPoint
+            String endPoint = Consts.ENDPOINT;
+            // SOAP Action
+            String soapAction = "http://tempuri.org/JA_LIST";
+
+            // 指定WebService的命名空间和调用的方法名
+            SoapObject rpc = new SoapObject(nameSpace, methodName);
+
+            // 设置需调用WebService接口需要传入的两个参数mobileCode、userId
+            String sql = "select  HT_FID,HT_FNUMBER,HT_FNAME,SGDW_FID,SGDW_FNUMBER,SGDW_FNAME  from XV_HT_SGDW";
+            rpc.addProperty("FPSW", "hmbt@uiop123");
+            rpc.addProperty("FSQL", sql);
+
+            // 生成调用WebService方法的SOAP请求信息,并指定SOAP的版本
+            SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER10);
+
+            envelope.bodyOut = rpc;
+            // 设置是否调用的是dotNet开发的WebService
+            envelope.dotNet = true;
+            // 等价于envelope.bodyOut = rpc;
+            envelope.setOutputSoapObject(rpc);
+
+            HttpTransportSE transport = new HttpTransportSE(endPoint);
+            try {
+                // 调用WebService
+                transport.call(soapAction, envelope);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 获取返回的数据
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            // 获取返回的结果
+            Log.i("返回结果", object.getProperty(0).toString() + "=========================");
+            String result = object.getProperty(0).toString();
+            try {
+                System.out.println(result);
+                JSONArray jsonArray = new JSONArray(result);
+                Gson gson = new Gson();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    HeTongBianHaoInfo info = gson.fromJson(jsonArray.get(i).toString(), HeTongBianHaoInfo.class);
+                    List list = new ArrayList();
+                    list.add(info.getHT_FNUMBER());
+                    list.add(info.getHT_FNAME());
+                    list.add(info.getSGDW_FNUMBER());
+                    list.add(info.getSGDW_FNAME());
+                    mShowData.add(list);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "1";
+            }
+            return "0";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ProgressDialogUtil.hideDialog();
+            if ("1".equals(s)) {
+                ToastUtils.showToast(getContext(), "查询失败");
+            }
+            showMoreAdapter.notifyDataSetChanged();
+        }
+    }
+
 
     private void searchBankNo() {
         ThreadUtils.runOnSubThread(new Runnable() {

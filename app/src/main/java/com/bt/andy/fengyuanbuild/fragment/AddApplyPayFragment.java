@@ -25,6 +25,7 @@ import com.bt.andy.fengyuanbuild.adapter.LvAddApplyAdapter;
 import com.bt.andy.fengyuanbuild.adapter.LvShowMoreAdapter;
 import com.bt.andy.fengyuanbuild.messegeInfo.DeleteResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.FeiYongXMInfo;
+import com.bt.andy.fengyuanbuild.messegeInfo.HeTongBianHaoInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.OrderDataInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SaveForResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SubListInfo;
@@ -32,6 +33,7 @@ import com.bt.andy.fengyuanbuild.utils.Consts;
 import com.bt.andy.fengyuanbuild.utils.EditTextUtils;
 import com.bt.andy.fengyuanbuild.utils.MyFragmentManagerUtil;
 import com.bt.andy.fengyuanbuild.utils.PopupOpenHelper;
+import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
 import com.bt.andy.fengyuanbuild.utils.ThreadUtils;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.bt.andy.fengyuanbuild.viewmodle.MyListView;
@@ -72,6 +74,9 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
     private TextView            tv_wy;//网银账户
     private TextView            tv_wyNo;//网银账号
     private TextView            tv_fplx;//发票类型
+    private TextView            tv_sqlx;//申请类型
+    private TextView            tv_htbh;//合同编号类型
+    private TextView            tv_sgdw;//施工队伍
     private TextView            tv_zdr;//制单人
     private TextView            tv_submit;//提交
     private EditText            et_use;//用途
@@ -100,6 +105,9 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         tv_wy = mRootView.findViewById(R.id.tv_wy);
         tv_wyNo = mRootView.findViewById(R.id.tv_wyNo);
         tv_fplx = mRootView.findViewById(R.id.tv_fplx);
+        tv_sqlx = mRootView.findViewById(R.id.tv_sqlx);
+        tv_htbh = mRootView.findViewById(R.id.tv_htbh);
+        tv_sgdw = mRootView.findViewById(R.id.tv_sgdw);
         tv_zdr = mRootView.findViewById(R.id.tv_zdr);
         et_use = mRootView.findViewById(R.id.et_use);
         lv_order = mRootView.findViewById(R.id.lv_order);
@@ -115,8 +123,11 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         //记录标题头部信息
         mOrderDataInfo = new OrderDataInfo();
         mBankMap = new HashMap<>();
-        mBankMap.put("bankNumber", "");
-        mBankMap.put("bankUserName", "");
+        mBankMap = new HashMap<>();
+        mBankMap.put("bankNumber", null == MyAppliaction.bankNumber ? "" : MyAppliaction.bankNumber);
+        mBankMap.put("bankUserName", null == MyAppliaction.bankUserName ? "" : MyAppliaction.bankUserName);
+        tv_wy.setText("".equals(mBankMap.get("bankUserName")) ? "未查找到网银" : (mBankMap.get("bankUserName")));
+        tv_wyNo.setText("".equals(mBankMap.get("bankNumber")) ? "--" : (mBankMap.get("bankNumber")));
         //初始化子表list
         initListView();
         img_back.setOnClickListener(this);
@@ -124,9 +135,11 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         tv_wl.setOnClickListener(this);
         tv_skdw.setOnClickListener(this);
         tv_fplx.setOnClickListener(this);
+        tv_sqlx.setOnClickListener(this);
+        tv_htbh.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
         //查询网银
-        searchBankNo();
+        //searchBankNo();
     }
 
     @Override
@@ -146,6 +159,12 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.tv_fplx://发票类型
                 changeViewContent(tv_fplx, "发票类型", "search", "fplxFname");
+                break;
+            case R.id.tv_sqlx://申请类型
+                changeViewContent(tv_sqlx, "申请类型", "search", "sqlxFname");
+                break;
+            case R.id.tv_htbh://合同编号
+                changeViewContent(tv_htbh, "合同编号", "search", "htbhFname");
                 break;
             case R.id.tv_submit://提交
                 String sub_type = String.valueOf(tv_submit.getText());
@@ -172,52 +191,6 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                     return true;
                 }
                 return false;
-            }
-        });
-    }
-
-    private void searchBankNo() {
-        ThreadUtils.runOnSubThread(new Runnable() {
-            @Override
-            public void run() {
-                Boolean result;
-                K3CloudApiClient client = new K3CloudApiClient(Consts.K3CloudURL);
-                try {
-                    result = client.login(Consts.dbId, MyAppliaction.userName, MyAppliaction.userpswd, Consts.lang);
-                    if (result) {
-                        //查询网银
-                        String sqlSub = "{\"FormId\": \"CN_BANKACNT\",\"FieldKeys\": \"fnumber,fname\"," +
-                                "    \"FilterString\": \"FName='" + MyAppliaction.userName + "'\"," +
-                                "    \"OrderString\": \"\",\"TopRowCount\": 100," +
-                                "    \"StartRow\": 0,\"Limit\": 0}";
-                        final List<List<Object>> lists = client.executeBillQuery(sqlSub);
-                        mBankMap.put("bankNumber", lists.get(0).get(0).toString());
-                        mBankMap.put("bankUserName", lists.get(0).get(1).toString());
-                        //                        mBankMap.put("bankName", lists.get(0).get(1).toString());
-                        ThreadUtils.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tv_wy.setText("".endsWith(mBankMap.get("bankUserName")) ? "未查找到网银" : mBankMap.get("bankUserName"));
-                                tv_wy.setText("".endsWith(mBankMap.get("bankNumber")) ? "未查找到网银" : mBankMap.get("bankNumber"));
-                            }
-                        });
-                    } else {
-                        ThreadUtils.runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtils.showToast(getContext(), "未查找到对应网银");
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    ThreadUtils.runOnMainThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToastUtils.showToast(getContext(), "未查找到对应网银");
-                        }
-                    });
-                }
             }
         });
     }
@@ -317,14 +290,24 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             ToastUtils.showToast(getContext(), "用途不能为空，请填写");
             return;
         }
+        String sqlxFnameid = mOrderDataInfo.getHeadData().get("sqlxFnameid");
+        if (null == sqlxFnameid || "".equals(sqlxFnameid)) {
+            ToastUtils.showToast(getContext(), "请选择申请类型");
+            return;
+        }
+        String htbhFnameid = mOrderDataInfo.getHeadData().get("htbhFnameid");
+        if (null == htbhFnameid || "".equals(htbhFnameid)) {
+            ToastUtils.showToast(getContext(), "请选择合同编号");
+            return;
+        }
         //保存
-        saveData2Service(wlFnameid, skdwFnameid, fplxFnameid, EditTextUtils.getContent(et_use));
+        saveData2Service(wlFnameid, skdwFnameid, fplxFnameid, EditTextUtils.getContent(et_use), sqlxFnameid, htbhFnameid, mOrderDataInfo.getHeadData().get("sgdwFnameid"));
     }
 
-    private void saveData2Service(String wlFnameid, String skdwFnameid, String fplxFnameid, String content_use) {
+    private void saveData2Service(String wlFnameid, String skdwFnameid, String fplxFnameid, String content_use, String sqlxFnameid, String htbhFnameid, String sgdwFnameid) {
         Date dt = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String subStr = "";//mData.get(0).getFyTypeID()
+        String subStr = "";
         if (mData.size() == 1) {
             subStr = "   {\"FCOSTID\": {\"FNUMBER\": \"" + mData.get(0).getFyTypeID() + "\"},\"F_ABC_Text1\": \"" + mData.get(0).getFyName() + "\"," +
                     "  \"FPAYPURPOSEID\": {\"FNumber\": \"SFKYT09_SYS\"},\"FENDDATE\": \"" + sdf.format(dt) + "\"," +
@@ -383,16 +366,13 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 "        \"FDOCUMENTSTATUS\": \"Z\"," +
                 "        \"FCANCELSTATUS\": \"A\"," +
                 "        \"FIsCredit\": false," +
-                "        \"FAPPLYORGID\": {" +
-                "            \"FNumber\": \"100\"" +
-                "        }," +
-                "        \"FSETTLECUR\": {" +
-                "            \"FNUMBER\": \"PRE001\"" +
-                "        }," +
+                "        \"FAPPLYORGID\": {" + "\"FNumber\": \"100\"" + "}," +
+                "        \"FSETTLECUR\": {" + "\"FNUMBER\": \"PRE001\"" + "}," +
                 "        \"F_ABC_Text\": \"" + content_use + "\"," +
-                "        \"F_ABC_Assistant\": {" +
-                "            \"FNumber\": \"" + fplxFnameid + "\"" +
-                "        }," +
+                "        \"F_ABC_Assistant\": {" + "\"FNumber\": \"" + fplxFnameid + "\"" + "}," +
+                "\"F_ABC_Assistant1\": {" + " \"FNumber\": \"" + htbhFnameid + "\"" + " }," +
+                "\"F_ABC_Assistant2\": {" + " \"FNumber\": \"" + sgdwFnameid + "\"" + " }," +
+                "\"F_ABC_Assistant3\": {" + " \"FNumber\": \"" + sqlxFnameid + "\"" + " }," +
                 //明细
                 "        \"FPAYAPPLYENTRY\": [" + subStr + "]}}";
 
@@ -453,36 +433,13 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             //为空，弹出选择菜单列表
             showMoreWriteInfo(tvcontent, title, whichkey);
         }
-
-        //        //弹出dailog展示修改内容
-        //        final EditText et = new EditText(getContext());
-        //        //写入数据
-        //        String oldContent = String.valueOf(tvcontent.getText());
-        //        et.setText(oldContent);
-
-        //        new AlertDialog.Builder(getContext()).setView(et).setTitle(title)
-        //                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-        //                    @Override
-        //                    public void onClick(DialogInterface dialogInterface, int i) {
-        //                        //修改改变内容的textview
-        //                        String content = String.valueOf(et.getText()).trim();
-        //                        if (null == writekind || "".equals(writekind)) {
-        //                            tvcontent.setText(content);
-        //                            //mOrderDataInfo.getHeadData().put(whichkey, content);
-        //                        }
-        //                        if ("search".equals(writekind)) {
-        //                            //为空，弹出选择菜单列表
-        //                            showMoreWriteInfo(tvcontent, title, whichkey);
-        //                        }
-        //                    }
-        //                }).setNegativeButton("取消", null).show();
     }
 
     private LvShowMoreAdapter showMoreAdapter;
     private List<List>        mShowData;//临时存放内码
     private OrderDataInfo     mOrderDataInfo;//整个订单表信息
 
-    private void showMoreWriteInfo(final TextView tvcontent, String title, final String whichkey) {
+    private void showMoreWriteInfo(final TextView tvcontent, final String title, final String whichkey) {
         View view = View.inflate(getContext(), R.layout.view_only_list, null);
         ListView lv_showmore = view.findViewById(R.id.lv_showmore);
         if (null == mShowData) {
@@ -503,8 +460,13 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 tvcontent.setText(mShowData.get(i).get(1).toString());
                 fyxmID = mShowData.get(i).get(0).toString();
                 if (null != whichkey && !"".equals(whichkey)) {
-                    mOrderDataInfo.getHeadData().put(whichkey, mShowData.get(i).get(1).toString());
-                    mOrderDataInfo.getHeadData().put(whichkey + "id", mShowData.get(i).get(0).toString());
+                    mOrderDataInfo.getHeadData().put(whichkey + "id", mShowData.get(i).get(0).toString());//number
+                    mOrderDataInfo.getHeadData().put(whichkey, mShowData.get(i).get(1).toString());//name
+                    if ("合同编号".equals(title)) {
+                        mOrderDataInfo.getHeadData().put("sgdwFnameid", mShowData.get(i).get(2).toString());//number
+                        mOrderDataInfo.getHeadData().put("sgdwFname", mShowData.get(i).get(3).toString());//name
+                        tv_sgdw.setText(mShowData.get(i).get(3).toString());
+                    }
                 }
                 dialog.dismiss();
             }
@@ -514,14 +476,13 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
     private void searchKindByWhichKey(String title) {
         final String sql;
         if ("往来".equals(title)) {
-            //            sql = "{\"FormId\":\"BD_Supplier\",\"FieldKeys\":\"fnumber,fname\",\"FilterString\":\"\",\"OrderString\":\"\",\"TopRowCount\":1000,\"StartRow\":0,\"Limit\":0}";
+            // sql = "{\"FormId\":\"BD_Supplier\",\"FieldKeys\":\"fnumber,fname\",\"FilterString\":\"\",\"OrderString\":\"\",\"TopRowCount\":1000,\"StartRow\":0,\"Limit\":0}";
             sql = "{\"FormId\":\"BD_Empinfo\",\"FieldKeys\":\"fnumber,fname\",\"FilterString\":\"\",\"OrderString\":\"\",\"TopRowCount\":1000,\"StartRow\":0,\"Limit\":0}";
         } else if ("收款单位".equals(title)) {
             sql = "{\"FormId\":\"BD_Empinfo\",\"FieldKeys\":\"fnumber,fname\",\"FilterString\":\"\",\"OrderString\":\"\",\"TopRowCount\":1000,\"StartRow\":0,\"Limit\":0}";
         } else if ("费用项目".equals(title)) {
             //查询
-            AreaTask areaTask = new AreaTask();
-            areaTask.execute();
+            new AreaTask().execute();
             return;
         } else if ("发票类型".equals(title)) {
             List list1 = new ArrayList();
@@ -537,6 +498,20 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             mShowData.add(list2);
             mShowData.add(list3);
             showMoreAdapter.notifyDataSetChanged();
+            return;
+        } else if ("申请类型".equals(title)) {
+            List list1 = new ArrayList();
+            list1.add("01");
+            list1.add("公司外部");
+            List list2 = new ArrayList();
+            list2.add("02");
+            list2.add("公司内部");
+            mShowData.add(list1);
+            mShowData.add(list2);
+            showMoreAdapter.notifyDataSetChanged();
+            return;
+        } else if ("合同编号".equals(title)) {
+            new ContractNumTask().execute();
             return;
         } else {
             sql = "";
@@ -772,6 +747,11 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (null == mShowData) {
+                mShowData = new ArrayList<>();
+            } else {
+                mShowData.clear();
+            }
         }
 
         @Override
@@ -843,5 +823,136 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             }
             showMoreAdapter.notifyDataSetChanged();
         }
+    }
+
+    //查合同编号
+    private class ContractNumTask extends AsyncTask<Void, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogUtil.startShow(getContext(), "正在搜索...");
+            if (null == mShowData) {
+                mShowData = new ArrayList<>();
+            } else {
+                mShowData.clear();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            // 命名空间
+            String nameSpace = "http://tempuri.org/";
+            // 调用的方法名称
+            String methodName = "JA_LIST";
+            // EndPoint
+            String endPoint = Consts.ENDPOINT;
+            // SOAP Action
+            String soapAction = "http://tempuri.org/JA_LIST";
+
+            // 指定WebService的命名空间和调用的方法名
+            SoapObject rpc = new SoapObject(nameSpace, methodName);
+
+            // 设置需调用WebService接口需要传入的两个参数mobileCode、userId
+            String sql = "select  HT_FID,HT_FNUMBER,HT_FNAME,SGDW_FID,SGDW_FNUMBER,SGDW_FNAME  from XV_HT_SGDW";
+            rpc.addProperty("FPSW", "hmbt@uiop123");
+            rpc.addProperty("FSQL", sql);
+
+            // 生成调用WebService方法的SOAP请求信息,并指定SOAP的版本
+            SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER10);
+
+            envelope.bodyOut = rpc;
+            // 设置是否调用的是dotNet开发的WebService
+            envelope.dotNet = true;
+            // 等价于envelope.bodyOut = rpc;
+            envelope.setOutputSoapObject(rpc);
+
+            HttpTransportSE transport = new HttpTransportSE(endPoint);
+            try {
+                // 调用WebService
+                transport.call(soapAction, envelope);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 获取返回的数据
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            // 获取返回的结果
+            Log.i("返回结果", object.getProperty(0).toString() + "=========================");
+            String result = object.getProperty(0).toString();
+            try {
+                System.out.println(result);
+                JSONArray jsonArray = new JSONArray(result);
+                Gson gson = new Gson();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    HeTongBianHaoInfo info = gson.fromJson(jsonArray.get(i).toString(), HeTongBianHaoInfo.class);
+                    List list = new ArrayList();
+                    list.add(info.getHT_FNUMBER());
+                    list.add(info.getHT_FNAME());
+                    list.add(info.getSGDW_FNUMBER());
+                    list.add(info.getSGDW_FNAME());
+                    mShowData.add(list);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "1";
+            }
+            return "0";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ProgressDialogUtil.hideDialog();
+            if ("1".equals(s)) {
+                ToastUtils.showToast(getContext(), "查询失败");
+            }
+            showMoreAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void searchBankNo() {
+        ThreadUtils.runOnSubThread(new Runnable() {
+            @Override
+            public void run() {
+                Boolean result;
+                K3CloudApiClient client = new K3CloudApiClient(Consts.K3CloudURL);
+                try {
+                    result = client.login(Consts.dbId, MyAppliaction.userName, MyAppliaction.userpswd, Consts.lang);
+                    if (result) {
+                        //查询网银
+                        String sqlSub = "{\"FormId\": \"CN_BANKACNT\",\"FieldKeys\": \"fnumber,fname\"," +
+                                "    \"FilterString\": \"FName='" + MyAppliaction.userName + "'\"," +
+                                "    \"OrderString\": \"\",\"TopRowCount\": 100," +
+                                "    \"StartRow\": 0,\"Limit\": 0}";
+                        final List<List<Object>> lists = client.executeBillQuery(sqlSub);
+                        mBankMap.put("bankNumber", lists.get(0).get(0).toString());
+                        mBankMap.put("bankUserName", lists.get(0).get(1).toString());
+                        //                        mBankMap.put("bankName", lists.get(0).get(1).toString());
+                        ThreadUtils.runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv_wy.setText("".endsWith(mBankMap.get("bankUserName")) ? "未查找到网银" : mBankMap.get("bankUserName"));
+                                tv_wy.setText("".endsWith(mBankMap.get("bankNumber")) ? "未查找到网银" : mBankMap.get("bankNumber"));
+                            }
+                        });
+                    } else {
+                        ThreadUtils.runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtils.showToast(getContext(), "未查找到对应网银");
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ThreadUtils.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.showToast(getContext(), "未查找到对应网银");
+                        }
+                    });
+                }
+            }
+        });
     }
 }
