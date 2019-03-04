@@ -163,6 +163,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loginFun(final String number, final String pass) {
+        ProgressDialogUtil.startShow(this, "正在登录...");
         ThreadUtils.runOnSubThread(new Runnable() {
             @Override
             public void run() {
@@ -200,6 +201,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
+                                ProgressDialogUtil.hideDialog();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                             }
@@ -208,6 +210,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
+                                ProgressDialogUtil.hideDialog();
                                 ToastUtils.showToast(LoginActivity.this, "登录失败！");
                             }
                         });
@@ -217,6 +220,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     ThreadUtils.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
+                            ProgressDialogUtil.hideDialog();
                             ToastUtils.showToast(LoginActivity.this, "登录失败！");
                         }
                     });

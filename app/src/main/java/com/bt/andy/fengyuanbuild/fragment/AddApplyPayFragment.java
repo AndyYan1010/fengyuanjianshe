@@ -1,6 +1,7 @@
 package com.bt.andy.fengyuanbuild.fragment;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,10 +34,10 @@ import com.bt.andy.fengyuanbuild.utils.Consts;
 import com.bt.andy.fengyuanbuild.utils.EditTextUtils;
 import com.bt.andy.fengyuanbuild.utils.MyFragmentManagerUtil;
 import com.bt.andy.fengyuanbuild.utils.PopupOpenHelper;
-import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
 import com.bt.andy.fengyuanbuild.utils.ThreadUtils;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.bt.andy.fengyuanbuild.viewmodle.MyListView;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -164,7 +165,8 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 changeViewContent(tv_sqlx, "申请类型", "search", "sqlxFname");
                 break;
             case R.id.tv_htbh://合同编号
-                changeViewContent(tv_htbh, "合同编号", "search", "htbhFname");
+                //先弹出输入框，输入合同编号或者名称，模糊搜索
+                showDialog2ForSearch("合同编号");
                 break;
             case R.id.tv_submit://提交
                 String sub_type = String.valueOf(tv_submit.getText());
@@ -193,6 +195,32 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 return false;
             }
         });
+    }
+
+    private boolean isSearchALL = true;
+    private String htSearchcont;
+
+    private void showDialog2ForSearch(String title) {
+        final EditText et = new EditText(getContext());
+        et.setText("");
+        new AlertDialog.Builder(getContext()).setView(et).setTitle(title)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //模糊搜索
+                        String content = EditTextUtils.getContent(et);
+                        if ("".equals(content)) {
+                            //获取所有合同编号
+                            isSearchALL = true;
+
+                        } else {
+                            //模糊搜索对应合同编号
+                            isSearchALL = false;
+                            htSearchcont = content;
+                        }
+                        changeViewContent(tv_htbh, "合同编号", "search", "htbhFname");
+                    }
+                }).setNegativeButton("取消", null).show();
     }
 
     private void showDialog2Close() {
@@ -375,16 +403,6 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 "\"F_ABC_Assistant3\": {" + " \"FNumber\": \"" + sqlxFnameid + "\"" + " }," +
                 //明细
                 "        \"FPAYAPPLYENTRY\": [" + subStr + "]}}";
-
-        //                "   {\"FCOSTID\": {\"FNUMBER\": \"FYXM14_SYS\"},\"F_ABC_Text1\": \"ceshi\"," +
-        //                "  \"FPAYPURPOSEID\": {\"FNumber\": \"SFKYT09_SYS\"},\"FENDDATE\": \"2019-01-31 00:00:00\"," +
-        //                "  \"FEXPECTPAYDATE\": \"2019-01-31 00:00:00\",\"FAPPLYAMOUNTFOR\": 12.0," +
-        //                "  \"FEACHBANKACCOUNT\": \"6222021001081006238\"," +
-        //                "  \"FEACHCCOUNTNAME\": \"宋金华\",\"FEACHBANKNAME\": \"上海市工商银行七宝支行\"," +
-        //                "  \"FDescription\": \"ceshi\",\"F_ABC_Decimal2\": 1.0,\"F_ABC_Decimal\": 12.0," +
-        //                "  \"F_ABC_Decimal1\": 12.00}" +
-
-
         ThreadUtils.runOnSubThread(new Runnable() {
             @Override
             public void run() {
@@ -441,7 +459,11 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
 
     private void showMoreWriteInfo(final TextView tvcontent, final String title, final String whichkey) {
         View view = View.inflate(getContext(), R.layout.view_only_list, null);
+        ImageView img_load = view.findViewById(R.id.img_load);
         ListView lv_showmore = view.findViewById(R.id.lv_showmore);
+        //初始化等待条
+        Glide.with(getContext()).load(R.drawable.loadgif).into(img_load);
+
         if (null == mShowData) {
             mShowData = new ArrayList();
         } else {
@@ -452,7 +474,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         }
         lv_showmore.setAdapter(showMoreAdapter);
         //根据whichkey来查找
-        searchKindByWhichKey(title);
+        searchKindByWhichKey(title, img_load);
         final AlertDialog dialog = new AlertDialog.Builder(getContext()).setView(view).setTitle(title).show();
         lv_showmore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -473,7 +495,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         });
     }
 
-    private void searchKindByWhichKey(String title) {
+    private void searchKindByWhichKey(String title, final ImageView img_load) {
         final String sql;
         if ("往来".equals(title)) {
             // sql = "{\"FormId\":\"BD_Supplier\",\"FieldKeys\":\"fnumber,fname\",\"FilterString\":\"\",\"OrderString\":\"\",\"TopRowCount\":1000,\"StartRow\":0,\"Limit\":0}";
@@ -482,7 +504,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             sql = "{\"FormId\":\"BD_Empinfo\",\"FieldKeys\":\"fnumber,fname\",\"FilterString\":\"\",\"OrderString\":\"\",\"TopRowCount\":1000,\"StartRow\":0,\"Limit\":0}";
         } else if ("费用项目".equals(title)) {
             //查询
-            new AreaTask().execute();
+            new AreaTask(img_load).execute();
             return;
         } else if ("发票类型".equals(title)) {
             List list1 = new ArrayList();
@@ -511,7 +533,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             showMoreAdapter.notifyDataSetChanged();
             return;
         } else if ("合同编号".equals(title)) {
-            new ContractNumTask().execute();
+            new ContractNumTask(img_load).execute();
             return;
         } else {
             sql = "";
@@ -520,6 +542,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             ToastUtils.showToast(getContext(), "查询出错");
             return;
         }
+        img_load.setVisibility(View.VISIBLE);
         ThreadUtils.runOnSubThread(new Runnable() {
             @Override
             public void run() {
@@ -540,6 +563,14 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 } catch (Exception e) {
                     e.printStackTrace();
                     ToastUtils.showToast(getContext(), "查询失败！");
+                } finally {
+                    ThreadUtils.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (null != img_load)
+                                img_load.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         });
@@ -743,6 +774,11 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
 
     //查费用项目
     private class AreaTask extends AsyncTask<Void, String, String> {
+        private ImageView img_load;
+
+        public AreaTask(ImageView img_load) {
+            this.img_load = img_load;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -752,6 +788,8 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             } else {
                 mShowData.clear();
             }
+            if (null != img_load)
+                img_load.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -818,6 +856,8 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if (null != img_load)
+                img_load.setVisibility(View.GONE);
             if ("1".equals(s)) {
                 ToastUtils.showToast(getContext(), "查询失败");
             }
@@ -827,16 +867,22 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
 
     //查合同编号
     private class ContractNumTask extends AsyncTask<Void, String, String> {
+        private ImageView img_load;
+
+        public ContractNumTask(ImageView img_load) {
+            this.img_load = img_load;
+        }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            ProgressDialogUtil.startShow(getContext(), "正在搜索...");
             if (null == mShowData) {
                 mShowData = new ArrayList<>();
             } else {
                 mShowData.clear();
             }
+            if (null != img_load)
+                img_load.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -854,7 +900,14 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             SoapObject rpc = new SoapObject(nameSpace, methodName);
 
             // 设置需调用WebService接口需要传入的两个参数mobileCode、userId
-            String sql = "select  HT_FID,HT_FNUMBER,HT_FNAME,SGDW_FID,SGDW_FNUMBER,SGDW_FNAME  from XV_HT_SGDW";
+            String sql;
+            if (isSearchALL) {
+                sql = "select  HT_FID,HT_FNUMBER,HT_FNAME,SGDW_FID,SGDW_FNUMBER,SGDW_FNAME  from XV_HT_SGDW";
+            } else {
+                sql = "select  HT_FID,HT_FNUMBER,HT_FNAME,SGDW_FID,SGDW_FNUMBER,SGDW_FNAME  from XV_HT_SGDW " +
+                        "where HT_FNUMBER like '%" + htSearchcont + "%' or HT_FNAME like '%" + htSearchcont + "%'";
+            }
+
             rpc.addProperty("FPSW", "hmbt@uiop123");
             rpc.addProperty("FSQL", sql);
 
@@ -902,7 +955,8 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            ProgressDialogUtil.hideDialog();
+            if (null != img_load)
+                img_load.setVisibility(View.GONE);
             if ("1".equals(s)) {
                 ToastUtils.showToast(getContext(), "查询失败");
             }

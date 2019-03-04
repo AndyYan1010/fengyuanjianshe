@@ -193,7 +193,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                     //新增子表
                     showPopUp2AddTable("add", 0);
                 } else if ("驳回".equals(saveOrback)) {
-
+                    showPopUp2Back();
                 }
                 break;
             case R.id.tv_wl://往来
@@ -223,6 +223,57 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                 }
                 break;
         }
+    }
+
+    //驳回申请单
+    private void showPopUp2Back() {
+        //弹出提示框确认驳回
+        popupOpenHelper = new PopupOpenHelper(getContext(), tv_right, R.layout.popup_warn_title);
+        popupOpenHelper.openPopupWindow(true, Gravity.CENTER);
+        popupOpenHelper.setOnPopupViewClick(new PopupOpenHelper.ViewClickListener() {
+            @Override
+            public void onViewClickListener(PopupWindow popupWindow, View inflateView) {
+                //长按删除
+                final TextView tv_cont = inflateView.findViewById(R.id.tv_cont);
+                final TextView tv_cancle = inflateView.findViewById(R.id.tv_cancle);
+                final TextView tv_sure = inflateView.findViewById(R.id.tv_sure);
+                tv_cont.setText("您确定驳回这条申请单？");
+                tv_cancle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupOpenHelper.dismiss();
+                    }
+                });
+                tv_sure.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupOpenHelper.dismiss();
+                        //驳回
+                        backThisOrder();
+                        MyFragmentManagerUtil.closeTopFragment(SearchOrderDetailFragment.this);
+                    }
+                });
+            }
+        });
+    }
+
+    private void backThisOrder() {
+        ThreadUtils.runOnSubThread(new Runnable() {
+            @Override
+            public void run() {
+                Boolean result;
+                K3CloudApiClient client = new K3CloudApiClient(Consts.K3CloudURL);
+                try {
+                    result = client.login(Consts.dbId, MyAppliaction.userName, MyAppliaction.userpswd, Consts.lang);
+                    if (result) {
+                        //TODO:调驳回api
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtils.showToast(getContext(), "驳回失败！");
+                }
+            }
+        });
     }
 
     private void changeViewContent(final TextView tvcontent, final String title, final String writekind, final String whichkey) {
