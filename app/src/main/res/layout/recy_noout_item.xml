@@ -38,11 +38,11 @@
                 android:orientation="horizontal">
 
                 <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="日期："-->
-                    <!--android:textColor="@color/word_black"-->
-                    <!--android:textSize="12sp"/>-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="日期："-->
+                <!--android:textColor="@color/word_black"-->
+                <!--android:textSize="12sp"/>-->
 
                 <TextView
                     android:id="@+id/tv_date"
@@ -81,13 +81,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="--"
-                    android:textColor="@color/red_30"
+                    android:textColor="@color/green_25"
                     android:textSize="14sp"/>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
@@ -118,9 +119,8 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <TextView
@@ -142,18 +142,41 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="数量："
+                    android:text="订单数量："
                     android:textColor="@color/word_black"
                     android:textSize="12sp"/>
 
                 <TextView
                     android:id="@+id/tv_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textColor="@color/blue_icon"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="未出库数量："
+                    android:textColor="@color/word_black"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/tv_leftNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="--"

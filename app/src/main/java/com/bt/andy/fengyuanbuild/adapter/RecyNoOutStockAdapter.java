@@ -34,5 +34,6 @@ public class RecyNoOutStockAdapter extends BaseQuickAdapter<StockInfo, BaseViewH
         helper.setText(R.id.tv_goodsname, item.getFname());
         helper.setText(R.id.tv_unit, item.getFunit());
         helper.setText(R.id.tv_num, item.getFqty());
+        helper.setText(R.id.tv_leftNum, item.getColumn1());
     }
 }

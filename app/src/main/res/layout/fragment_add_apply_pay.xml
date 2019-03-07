@@ -474,6 +474,18 @@
 
             <View
                 android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/vm_black_87"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recy_addpic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+            </android.support.v7.widget.RecyclerView>
+
+            <View
+                android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:background="@color/gray_ef"/>
 
@@ -505,4 +517,21 @@
         android:text="保存"
         android:textColor="@color/white"
         android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/tv_subPic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_submit"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/bg_round_blue_10"
+        android:paddingBottom="8dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="8dp"
+        android:text="上传图片"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="gone"/>
 </RelativeLayout>

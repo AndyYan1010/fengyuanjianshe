@@ -1,5 +1,6 @@
 package com.bt.andy.fengyuanbuild.fragment;
 
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,10 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
+import com.bt.andy.fengyuanbuild.adapter.LvShowMoreAdapter;
 import com.bt.andy.fengyuanbuild.adapter.RecyOrderAdapter;
 import com.bt.andy.fengyuanbuild.messegeInfo.StockInfo;
 import com.bt.andy.fengyuanbuild.utils.Consts;
@@ -21,6 +26,7 @@ import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
 import com.bt.andy.fengyuanbuild.utils.SoapUtil;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.bt.andy.fengyuanbuild.viewmodle.CustomDatePicker;
+import com.bumptech.glide.Glide;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -127,7 +133,8 @@ public class ReceiveSheetFragment extends Fragment implements View.OnClickListen
                 chooseTime(tv_end);
                 break;
             case R.id.tv_kehu://选择客户
-
+                //弹出选择客户界面
+                showMoreCusInfo();
                 break;
             case R.id.tv_search://查询账单列表
                 mStartTime = String.valueOf(tv_start.getText()).trim();
@@ -135,6 +142,42 @@ public class ReceiveSheetFragment extends Fragment implements View.OnClickListen
                 searchOrderList(mStartTime, mEndTime);
                 break;
         }
+    }
+
+    private LvShowMoreAdapter showMoreAdapter;
+    private List              mShowData;
+
+    private void showMoreCusInfo() {
+        View view = View.inflate(getContext(), R.layout.view_only_list, null);
+        ImageView img_load = view.findViewById(R.id.img_load);
+        ListView lv_showmore = view.findViewById(R.id.lv_showmore);
+        //初始化等待条
+        Glide.with(getContext()).load(R.drawable.loadgif).into(img_load);
+        if (null == mShowData) {
+            mShowData = new ArrayList();
+        } else {
+            mShowData.clear();
+        }
+        if (null == showMoreAdapter) {
+            showMoreAdapter = new LvShowMoreAdapter(getContext(), mShowData);
+        }
+        lv_showmore.setAdapter(showMoreAdapter);
+        //查找客户语句
+        searchCus();
+        final AlertDialog dialog = new AlertDialog.Builder(getContext()).setView(view).setTitle("客户").show();
+        lv_showmore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //TODO:选择了客户
+                dialog.dismiss();
+            }
+        });
+    }
+
+    //查询用户下的客户
+    private void searchCus() {
+
+
     }
 
     private CustomDatePicker dpk1;
@@ -162,7 +205,7 @@ public class ReceiveSheetFragment extends Fragment implements View.OnClickListen
             return;
         }
         //查询账单列表
-        String sql = "exec [z_yingshou] '" + startTime + "','" + endTime + "'";//2019-01-01 00:00:00   2019-04-02 00:00:00
+        String sql = "exec [z_yingshou] '" + startTime + "','" + endTime + "','" + MyAppliaction.userName + "'";//2019-01-01 00:00:00   2019-04-02 00:00:00
         mData.clear();
         orderAdapter.notifyDataSetChanged();
         new ItemTask(sql).execute();

@@ -1,5 +1,6 @@
 package com.bt.andy.fengyuanbuild.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
@@ -17,6 +18,7 @@ import com.bt.andy.fengyuanbuild.fragment.ApplyForPayFragment;
  */
 
 public class BillForPayActivity extends BaseActivity {
+    private ApplyForPayFragment applyPayFt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,7 @@ public class BillForPayActivity extends BaseActivity {
     }
 
     private void initView() {
-        ApplyForPayFragment applyPayFt = new ApplyForPayFragment();
+        applyPayFt = new ApplyForPayFragment();
         FragmentTransaction ftt = getSupportFragmentManager().beginTransaction();
         ftt.add(R.id.frame, applyPayFt, "applyPayFt");
         ftt.commit();
@@ -35,5 +37,11 @@ public class BillForPayActivity extends BaseActivity {
 
     private void initData() {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        applyPayFt.onActivityResult(requestCode, resultCode, data);
     }
 }

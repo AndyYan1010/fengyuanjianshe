@@ -52,6 +52,11 @@ public class StockInfo {
     private String fbqys;
     private String fbqss;
     private String fqmye;
+    /**
+     * Column1 : Column1
+     */
+
+    private String Column1;
 
 
     public String getFname() {
@@ -156,5 +161,13 @@ public class StockInfo {
 
     public void setFqmye(String fqmye) {
         this.fqmye = fqmye;
+    }
+
+    public String getColumn1() {
+        return Column1;
+    }
+
+    public void setColumn1(String Column1) {
+        this.Column1 = Column1;
     }
 }

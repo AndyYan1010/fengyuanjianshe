@@ -1,8 +1,16 @@
 package com.bt.andy.fengyuanbuild.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,11 +31,25 @@ import com.bt.andy.fengyuanbuild.utils.ThreadUtils;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import kingdee.bos.webapi.client.K3CloudApiClient;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * @创建者 AndyYan
@@ -39,7 +61,6 @@ import kingdee.bos.webapi.client.K3CloudApiClient;
  */
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
-
     private EditText mEdit_num;
     private EditText mEdit_psd;
     private CheckBox ck_remPas;
@@ -95,8 +116,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     ToastUtils.showToast(LoginActivity.this, "请输入密码");
                     return;
                 }
-                //number = "席会计";
-                //pass = "123456";
                 //是否记住账号密码
                 isNeedRem(number, pass);
                 //冯源建设
@@ -105,8 +124,151 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 //                loginFunCZ(number, pass);
                 //                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 //                startActivity(intent);
+
+                //okhttp访问webservice
+                //                testOkWeb();
                 break;
         }
+    }
+
+    private void testOkWeb() {
+        //第二个参数是需要申请的权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //权限还没有授予，需要在这里写申请权限的代码
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_CALL_PHONE2);
+        } else {
+            //权限已经被授予，在这里直接写要执行的相应方法即可
+            //调用相册
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, IMAGE);
+        }
+    }
+
+    private static final int IMAGE                              = 1;//调用系统相册-选择图片n小于0
+    private              int MY_PERMISSIONS_REQUEST_CALL_PHONE2 = 1001;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //相册返回，获取图片路径
+        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+            showImage(imagePath);
+            c.close();
+        }
+    }
+
+    private void showImage(String imagePath) {
+        File file = new File(imagePath);
+        if (null != file && file.exists()) {
+            byte[] fileToByte = getFileToByte(file);
+            try {
+                contactByOkh(fileToByte, file.getName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // contactByOkh(file);
+        }
+    }
+
+    private void contactByOkh(byte[] fileToByte, String fileName) throws IOException {
+        String url = "http://111.231.56.97:9091/WebService1_k3cloud.asmx/Append?fileName=" + fileName + "&buffer=" + fileToByte;
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                ThreadUtils.runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast(LoginActivity.this, "网络错误");
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (200 == response.code()) {
+                    ThreadUtils.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.showToast(LoginActivity.this, "上传成功");
+                            ResponseBody body = response.body();
+                            System.out.println(body.toString());
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+
+    private void contactByOkh(File file) {
+        // String url = "http://2366x63q23.51mypc.cn:36994/Service1.asmx/Login_CZ";
+        String url = "http://111.231.56.97:9091/WebService1_k3cloud.asmx/Append";
+
+        OkHttpClient client = new OkHttpClient();
+        Request.Builder builder1 = new Request.Builder();
+        RequestBody fileBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), file);
+        MultipartBody.Builder mtBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        mtBuilder.addFormDataPart("fileName", file.getName());
+        mtBuilder.addFormDataPart("buffer", file.getName(), fileBody);
+        RequestBody requestBody = mtBuilder.build();
+        Request request = builder1.url(url).post(requestBody).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                ThreadUtils.runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast(LoginActivity.this, "网络错误");
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (200 == response.code()) {
+                    ThreadUtils.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.showToast(LoginActivity.this, "上传成功");
+                            ResponseBody body = response.body();
+                            System.out.println(body.toString());
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private byte[] getFileToByte(File testFile) {
+        byte[] by = new byte[(int) testFile.length()];
+        try {
+            InputStream is = new FileInputStream(testFile);
+            ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+            byte[] bb = new byte[2048];
+            int ch;
+            ch = is.read(bb);
+            while (ch != -1) {
+                bytestream.write(bb, 0, ch);
+                ch = is.read(bb);
+            }
+            by = bytestream.toByteArray();
+        } catch (Exception ex) {
+            throw new RuntimeException("transform file into bin Array 出错", ex);
+        }
+        return by;
     }
 
     private void loginFunCZ(String number, String pass) {
@@ -140,25 +302,40 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             ProgressDialogUtil.hideDialog();
-            if (s.contains("成功")) {
-                String[] split = s.split("/");
-                String sId = split[0];
-                String userid = sId.substring(2, sId.length());
-                MyAppliaction.userID = userid;//用户id
-                MyAppliaction.memID = username;//工号
-                if (split.length >= 2) {
-                    MyAppliaction.userName = split[1];//用户姓名
-                } else {
-                    MyAppliaction.userName = "";//用户姓名
-                    ToastUtils.showToast(LoginActivity.this, "系统中未填写姓名");
-                }
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+            //  Intent intent0 = new Intent(LoginActivity.this, MainActivity.class);
+            //  startActivity(intent0);
+            if ("0".equals(s)) {
                 ToastUtils.showToast(LoginActivity.this, "登陆成功");
-                finish();
+                MyAppliaction.userName = username;
+                Intent intent0 = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent0);
+            } else if ("1".equals(s)) {
+                ToastUtils.showToast(LoginActivity.this, "登陆失败，密码错误");
+            } else if ("2".equals(s)) {
+                ToastUtils.showToast(LoginActivity.this, "登陆失败，用户名错误");
             } else {
-                ToastUtils.showToast(LoginActivity.this, "登陆失败");
+                ToastUtils.showToast(LoginActivity.this, "登陆失败，未知错误");
             }
+
+            //            if (s.contains("成功")) {
+            //                String[] split = s.split("/");
+            //                String sId = split[0];
+            //                String userid = sId.substring(2, sId.length());
+            //                MyAppliaction.userID = userid;//用户id
+            //                MyAppliaction.memID = username;//工号
+            //                if (split.length >= 2) {
+            //                    MyAppliaction.userName = split[1];//用户姓名
+            //                } else {
+            //                    MyAppliaction.userName = "";//用户姓名
+            //                    ToastUtils.showToast(LoginActivity.this, "系统中未填写姓名");
+            //                }
+            //                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            //                startActivity(intent);
+            //                ToastUtils.showToast(LoginActivity.this, "登陆成功");
+            //                finish();
+            //            } else {
+            //                ToastUtils.showToast(LoginActivity.this, "登陆失败");
+            //            }
         }
     }
 

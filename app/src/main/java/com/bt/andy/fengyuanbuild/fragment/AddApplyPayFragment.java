@@ -1,10 +1,19 @@
 package com.bt.andy.fengyuanbuild.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -24,6 +33,7 @@ import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
 import com.bt.andy.fengyuanbuild.adapter.LvAddApplyAdapter;
 import com.bt.andy.fengyuanbuild.adapter.LvShowMoreAdapter;
+import com.bt.andy.fengyuanbuild.adapter.MyRecPicAdapter;
 import com.bt.andy.fengyuanbuild.messegeInfo.DeleteResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.FeiYongXMInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.HeTongBianHaoInfo;
@@ -34,6 +44,7 @@ import com.bt.andy.fengyuanbuild.utils.Consts;
 import com.bt.andy.fengyuanbuild.utils.EditTextUtils;
 import com.bt.andy.fengyuanbuild.utils.MyFragmentManagerUtil;
 import com.bt.andy.fengyuanbuild.utils.PopupOpenHelper;
+import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
 import com.bt.andy.fengyuanbuild.utils.ThreadUtils;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.bt.andy.fengyuanbuild.viewmodle.MyListView;
@@ -46,6 +57,10 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,14 +94,17 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
     private TextView            tv_htbh;//合同编号类型
     private TextView            tv_sgdw;//施工队伍
     private TextView            tv_zdr;//制单人
-    private TextView            tv_submit;//提交
+    private TextView            tv_submit;//提交申请单
+    private TextView            tv_subPic;//提交图片
     private EditText            et_use;//用途
     private MyListView          lv_order;
     private LvAddApplyAdapter   addApplyAdapter;
     private List<SubListInfo>   mData;//子表数据
     private PopupOpenHelper     popupOpenHelper;
     private String              saveOrderNo;//提交后订单的单号
+    private int                 saveOrderID;//提交后订单的内码
     private Map<String, String> mBankMap;//银行卡号的信息
+    private RecyclerView        recy_addpic;//附件图片
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -111,8 +129,10 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         tv_sgdw = mRootView.findViewById(R.id.tv_sgdw);
         tv_zdr = mRootView.findViewById(R.id.tv_zdr);
         et_use = mRootView.findViewById(R.id.et_use);
+        recy_addpic = mRootView.findViewById(R.id.recy_addpic);
         lv_order = mRootView.findViewById(R.id.lv_order);
         tv_submit = mRootView.findViewById(R.id.tv_submit);
+        tv_subPic = mRootView.findViewById(R.id.tv_subPic);
     }
 
     private void initData() {
@@ -138,14 +158,21 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         tv_fplx.setOnClickListener(this);
         tv_sqlx.setOnClickListener(this);
         tv_htbh.setOnClickListener(this);
+        tv_subPic.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
         //查询网银
         //searchBankNo();
+        //初始化recyclerview数据
+        initRecyView();
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.tv_subPic:
+                //上传图片
+                next2SendPic();
+                break;
             case R.id.img_back:
                 showDialog2Close();
                 break;
@@ -195,6 +222,64 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                 return false;
             }
         });
+    }
+
+    private static final int IMAGE     = 1;//调用系统相册-选择图片n小于0
+    private static final int SHOT_CODE = 20;//调用系统相机-选择图片n小于0
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //相册返回，获取图片路径
+        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getActivity().getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+            showImage(imagePath);
+            c.close();
+        }
+        //相机返回
+        if (requestCode == SHOT_CODE && resultCode == Activity.RESULT_OK) {
+            if (null != recPicAdapter.getFilePath())
+                showImage(recPicAdapter.getFilePath());
+        }
+    }
+
+
+    //加载图片
+    private void showImage(String imgPath) {
+        //压缩图片
+        //        File file = new File(imgPath);
+        //        File newFile = new CompressHelper.Builder(this)
+        //                .setMaxWidth(1080)  // 默认最大宽度为720
+        //                .setMaxHeight(1920) // 默认最大高度为960
+        //                .setQuality(100)    // 默认压缩质量为80
+        //                .setFileName("sendPic") // 设置你需要修改的文件名
+        //                .setCompressFormat(Bitmap.CompressFormat.PNG) // 设置默认压缩为jpg格式
+        //                .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
+        //                        Environment.DIRECTORY_PICTURES).getAbsolutePath())
+        //                .build()
+        //                .compressToFile(file);
+        //        Bitmap bm = BitmapFactory.decodeFile(newFile.getPath());
+        //添加到bitmap集合中
+        mBitmapList.add(imgPath);
+        recPicAdapter.notifyDataSetChanged();
+    }
+
+    private List            mBitmapList;
+    private MyRecPicAdapter recPicAdapter;
+
+    private void initRecyView() {
+        //添加初始展示的图片
+        Bitmap mBm = BitmapFactory.decodeResource(getResources(), R.drawable.add_picture);
+        mBitmapList = new ArrayList<>();
+        mBitmapList.add(mBm);
+        recy_addpic.setLayoutManager(new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
+        recPicAdapter = new MyRecPicAdapter(getContext(), mBitmapList, false);
+        recy_addpic.setAdapter(recPicAdapter);
     }
 
     private boolean isSearchALL = true;
@@ -252,6 +337,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
     }
 
     private void submitData() {
+        ProgressDialogUtil.startShow(getContext(), "正在提交");
         ThreadUtils.runOnSubThread(new Runnable() {
             @Override
             public void run() {
@@ -268,6 +354,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
+                                ProgressDialogUtil.hideDialog();
                                 if ("true".equals(resultInfo2.getResult().getResponseStatus().getIsSuccess())) {
                                     ToastUtils.showToast(getContext(), "提交成功");
                                     //提交成功
@@ -281,6 +368,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
+                                ProgressDialogUtil.hideDialog();
                                 ToastUtils.showToast(getContext(), "提交失败");
                             }
                         });
@@ -290,6 +378,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                     ThreadUtils.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
+                            ProgressDialogUtil.hideDialog();
                             ToastUtils.showToast(getContext(), "提交失败");
                         }
                     });
@@ -333,6 +422,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
     }
 
     private void saveData2Service(String wlFnameid, String skdwFnameid, String fplxFnameid, String content_use, String sqlxFnameid, String htbhFnameid, String sgdwFnameid) {
+        ProgressDialogUtil.startShow(getContext(), "正在保存");
         Date dt = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String subStr = "";
@@ -418,9 +508,12 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                             ThreadUtils.runOnMainThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    ProgressDialogUtil.hideDialog();
                                     //新建成功
                                     saveOrderNo = saveForResultInfo.getResult().getNumber();
+                                    saveOrderID = saveForResultInfo.getResult().getId();
                                     ToastUtils.showToast(getContext(), "保存成功。");
+                                    tv_subPic.setVisibility(View.VISIBLE);
                                     tv_submit.setText("提交审核");
                                 }
                             });
@@ -429,6 +522,7 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                         ThreadUtils.runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
+                                ProgressDialogUtil.hideDialog();
                                 ToastUtils.showToast(getContext(), "提交失败！");
                             }
                         });
@@ -438,12 +532,36 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                     ThreadUtils.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
+                            ProgressDialogUtil.hideDialog();
                             ToastUtils.showToast(getContext(), "提交失败！");
                         }
                     });
                 }
             }
         });
+    }
+
+    private void next2SendPic() {
+        if (mBitmapList.size() <= 1) {
+            Log.i("上传图片", "无需上传图片");
+        } else {
+            for (int i = 0; i < mBitmapList.size() - 1; i++) {
+                upImageFile((String) mBitmapList.get(i + 1));
+            }
+        }
+    }
+
+    private void upImageFile(String filePath) {
+        File file = new File(filePath);
+        if (null != file && file.exists()) {
+            String imgStr = getImgStr(filePath);
+            String name = file.getName();
+            long length = file.length();
+            String suffix = "." + name.substring(name.lastIndexOf(".") + 1);
+            new UpPicItemTask(imgStr, name, length, saveOrderID, saveOrderNo, 0, "", suffix).execute();
+        } else {
+            ToastUtils.showToast(getContext(), "图片文件不存在，请重新选择！");
+        }
     }
 
     private void changeViewContent(final TextView tvcontent, final String title, final String writekind, final String whichkey) {
@@ -963,6 +1081,122 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
             showMoreAdapter.notifyDataSetChanged();
         }
     }
+
+    //提交单个图片
+    class UpPicItemTask extends AsyncTask<Void, String, String> {
+        private String buffer;
+        private String sFAttachmentName;
+        private long   sFAttachmentSize;
+        private int    FINTERID;
+        private String FBILLNO;
+        private int    USERID;
+        private String FNOTE;
+        private String FILETYPE;
+
+        UpPicItemTask(String buffer, String sFAttachmentName, long sFAttachmentSize, int FINTERID, String FBILLNO, int USERID, String FNOTE, String FILETYPE) {
+            this.buffer = buffer;
+            this.sFAttachmentName = sFAttachmentName;
+            this.sFAttachmentSize = sFAttachmentSize;
+            this.FINTERID = FINTERID;
+            this.FBILLNO = FBILLNO;
+            this.USERID = USERID;
+            this.FNOTE = FNOTE;
+            this.FILETYPE = FILETYPE;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogUtil.startShow(getContext(), "正在提交图片...");
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            // 命名空间
+            String nameSpace = "k3clound";//webservice
+            // 调用的方法名称
+            String methodName = Consts.UP_PIC_INTER;
+            // EndPoint
+            String endPoint = Consts.PICPOINT;
+            // SOAP Action
+            String soapAction = "k3clound/BD_upload_attchment";
+
+            // 指定WebService的命名空间和调用的方法名
+            SoapObject rpc = new SoapObject(nameSpace, methodName);
+
+            // 设置需调用WebService接口需要传入的参数
+            rpc.addProperty("bufferstr", buffer);
+            rpc.addProperty("sFAttachmentName", sFAttachmentName);
+            rpc.addProperty("sFAttachmentSize", sFAttachmentSize);
+            rpc.addProperty("FINTERID", 100096);//FINTERID
+            rpc.addProperty("FBILLNO", "FKSQ000047");//FBILLNO
+            rpc.addProperty("USERID", MyAppliaction.memID);
+            rpc.addProperty("FNOTE", "");
+            rpc.addProperty("FILETYPE", FILETYPE);
+
+            // 生成调用WebService方法的SOAP请求信息,并指定SOAP的版本
+            SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER10);
+
+            envelope.bodyOut = rpc;
+            // 设置是否调用的是dotNet开发的WebService
+            envelope.dotNet = true;
+            // 等价于envelope.bodyOut = rpc;
+            envelope.setOutputSoapObject(rpc);
+
+            HttpTransportSE transport = new HttpTransportSE(endPoint);
+            try {
+                // 调用WebService
+                transport.call(soapAction, envelope);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // 获取返回的数据
+            SoapObject object = (SoapObject) envelope.bodyIn;
+
+            // 获取返回的结果
+            Log.i("返回结果", object.getProperty(0).toString() + "=========================");
+            String result = object.getProperty(0).toString();//[{"status":"01","message":"成功"}]
+            try {
+                System.out.println(result);
+                if (null != result && result.contains("成功")) {
+                    ToastUtils.showToast(getContext(), "图片上传成功");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "1";
+            }
+            return "0";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ProgressDialogUtil.hideDialog();
+        }
+    }
+
+    /**
+     * * 将图片转换成Base64编码
+     * * @param imgFile 待处理图片
+     * * @return
+     */
+    public static String getImgStr(String imgFile) {
+        //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
+        InputStream in = null;
+        byte[] data = null;
+        //读取图片字节数组
+        try {
+            in = new FileInputStream(imgFile);
+            data = new byte[in.available()];
+            in.read(data);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new String(org.apache.commons.codec.binary.Base64.encodeBase64(data));
+    }
+
 
     private void searchBankNo() {
         ThreadUtils.runOnSubThread(new Runnable() {

@@ -40,4 +40,7 @@ dependencies {
     implementation files('libs/jackson-annotations-2.1.0.jar')
     implementation files('libs/jackson-core-2.1.0.jar')
     implementation files('libs/jackson-databind-2.1.0.jar')
+    implementation files('libs/commons-codec-1.1.jar')
+    implementation files('libs/sun.misc.BASE64Decoder.jar')
+//    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 }

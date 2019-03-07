@@ -3,6 +3,7 @@ package com.bt.andy.fengyuanbuild.fragment;
 import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,6 +26,7 @@ import com.bt.andy.fengyuanbuild.adapter.LvShowMoreAdapter;
 import com.bt.andy.fengyuanbuild.messegeInfo.DeleteResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.FeiYongXMInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.HeTongBianHaoInfo;
+import com.bt.andy.fengyuanbuild.messegeInfo.LoadPicInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.OrderDataInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SaveForResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SearchDetailInfo;
@@ -45,6 +47,8 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Decoder.BASE64Decoder;
 import kingdee.bos.webapi.client.K3CloudApiClient;
 
 /**
@@ -165,6 +170,8 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         initListView();
         //获取付款申请单详情
         getOrderDetail();
+        //查找图片
+        searchPic();
         mBankMap = new HashMap<>();
         mBankMap.put("bankNumber", null == MyAppliaction.bankNumber ? "" : MyAppliaction.bankNumber);
         mBankMap.put("bankUserName", null == MyAppliaction.bankUserName ? "" : MyAppliaction.bankUserName);
@@ -927,11 +934,133 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         });
     }
 
+    private void searchPic() {//查找图片
+        new SearchPicItemTask(mOrderNo).execute();
+    }
+
     public void setOrderNo(String orderNo, String kind, int type) {
         mOrderNo = orderNo;
         mKind = kind;
         mType = type;
     }
+
+    //查找图片
+    class SearchPicItemTask extends AsyncTask<Void, String, String> {
+        private String FBILLNO;
+
+        SearchPicItemTask(String FBILLNO) {
+            this.FBILLNO = FBILLNO;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogUtil.startShow(getContext(), "正在提交图片...");
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            // 命名空间
+            String nameSpace = "k3clound";//webservice
+            // 调用的方法名称
+            String methodName = Consts.LOAD_PIC_INTER;
+            // EndPoint
+            String endPoint = Consts.PICPOINT;
+            // SOAP Action
+            String soapAction = "k3clound/BD_download_attchment";
+
+            // 指定WebService的命名空间和调用的方法名
+            SoapObject rpc = new SoapObject(nameSpace, methodName);
+
+            // 设置需调用WebService接口需要传入的参数
+            rpc.addProperty("FINTERID", 0);//FINTERID
+            rpc.addProperty("FBILLNO", "FKSQ000047");//FBILLNO
+
+            // 生成调用WebService方法的SOAP请求信息,并指定SOAP的版本
+            SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER10);
+
+            envelope.bodyOut = rpc;
+            // 设置是否调用的是dotNet开发的WebService
+            envelope.dotNet = true;
+            // 等价于envelope.bodyOut = rpc;
+            envelope.setOutputSoapObject(rpc);
+
+            HttpTransportSE transport = new HttpTransportSE(endPoint);
+            try {
+                // 调用WebService
+                transport.call(soapAction, envelope);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // 获取返回的数据
+            SoapObject object = (SoapObject) envelope.bodyIn;
+
+            // 获取返回的结果
+            Log.i("返回结果", object.getProperty(0).toString() + "=========================");
+            String result = object.getProperty(0).toString();//[{"status":"01","message":"成功","FATTACHMENTNAME":"IMG_20180129_095450.jpg","FEXTNAME":".jpg","bufferstr":"wD9k="}]
+            try {
+                JSONArray jsonArray = new JSONArray(result);
+                Gson gson = new Gson();
+                LoadPicInfo loadPicInfo = gson.fromJson(jsonArray.get(0).toString(), LoadPicInfo.class);
+                if ("01".equals(loadPicInfo.getStatus())) {
+                    final String bufferstr = loadPicInfo.getBufferstr();
+                    //将base64转图片
+                    long photoTime = System.currentTimeMillis();
+                    final String path = Environment.getExternalStorageDirectory().getPath() + "/temp" + photoTime + ".jpg";// 获取SD卡路径
+                    ThreadUtils.runOnSubThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            boolean b = base64StrToImage(bufferstr, path);
+                        }
+                    });
+                }
+                ToastUtils.showToast(getContext(), loadPicInfo.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "1";
+            }
+            return "0";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ProgressDialogUtil.hideDialog();
+        }
+    }
+
+    private boolean base64StrToImage(String bufferstr, String path) {
+        if (bufferstr == null) {
+            // 图像数据为空
+            return false;
+        }
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            // Base64解码
+            byte[] b = decoder.decodeBuffer(bufferstr);
+            for (int i = 0; i < b.length; ++i) {
+                if (b[i] < 0) {// 调整异常数据
+                    b[i] += 256;
+                }
+            }
+            // 生成jpeg图片
+            String imgFilePath = "D:\\tanbing2.jpg";// 新生成的图片
+            OutputStream out = new FileOutputStream(path);
+            out.write(b);
+            out.flush();
+            out.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    //压缩图片文件
+    public void compressFile() {
+
+    }
+
 
     //查费用项目
     private class AreaTask extends AsyncTask<Void, String, String> {

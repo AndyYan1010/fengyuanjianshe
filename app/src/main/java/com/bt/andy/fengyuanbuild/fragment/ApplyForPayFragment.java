@@ -1,5 +1,6 @@
 package com.bt.andy.fengyuanbuild.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -37,7 +38,7 @@ public class ApplyForPayFragment extends Fragment implements View.OnClickListene
     private List<OrderListFragment> fragmentsList;
     private MyPagerAdapter          myPagerAdapter;
     private List<String>            contsList;
-
+    private AddApplyPayFragment     addApplyFt;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,13 +75,19 @@ public class ApplyForPayFragment extends Fragment implements View.OnClickListene
                 getActivity().finish();
                 break;
             case R.id.tv_right://跳转新增界面
-                AddApplyPayFragment addApplyFt = new AddApplyPayFragment();
+                addApplyFt = new AddApplyPayFragment();
                 FragmentTransaction ftt = getActivity().getSupportFragmentManager().beginTransaction();
                 ftt.add(R.id.frame, addApplyFt, "addApplyFt");
                 ftt.addToBackStack("addApplyFt");
                 ftt.commit();
                 break;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        addApplyFt.onActivityResult(requestCode, resultCode, data);
     }
 
     private void initTabLayout() {
