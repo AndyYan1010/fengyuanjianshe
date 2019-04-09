@@ -57,8 +57,7 @@ public class DropdownButton extends RelativeLayout implements Checkable,
 	private void init(Context context) {
 		mContext = context;
 		// 菜单按钮的布局
-		View view = LayoutInflater.from(getContext()).inflate(
-				R.layout.dropdown_tab_button, this, true);
+		View view = LayoutInflater.from(getContext()).inflate(R.layout.dropdown_tab_button, this, true);
 		text = (TextView) view.findViewById(R.id.textView);
 		bLine = view.findViewById(R.id.bottomLine);
 		// 点击事件，点击外部区域隐藏popupWindow
@@ -78,8 +77,7 @@ public class DropdownButton extends RelativeLayout implements Checkable,
 		drops.get(0).setChoiced(true);
 		text.setText(drops.get(0).getName());
 		selectPosition = 0;
-		View view = LayoutInflater.from(mContext).inflate(
-				R.layout.dropdown_content, null);
+		View view = LayoutInflater.from(mContext).inflate(R.layout.dropdown_content, null);
 		view.findViewById(R.id.content).setOnClickListener(
 				new OnClickListener() {
 					@Override

@@ -221,7 +221,9 @@ public class StockListFragment extends Fragment implements View.OnClickListener 
                     stockInfo.setAddress(map.get("fname1"));//哪个仓库
                     stockInfo.setFunit(map.get("fname2"));//货物单位
                     stockInfo.setFqty(df.format(MyNumUtils.getDoubleNum(map.get("fqty"))));
-                    mStockInfos.add(stockInfo);
+                    if (!".00".equals(stockInfo.getFqty())) {
+                        mStockInfos.add(stockInfo);
+                    }
                 }
                 if (mStockInfos.size() > 0) {
                     linear_drop.setVisibility(View.GONE);

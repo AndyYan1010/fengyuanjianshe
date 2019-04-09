@@ -33,9 +33,8 @@ public class PopWinDownUtil {
 		popupWindow.setBackgroundDrawable(dw);
 		popupWindow.setOutsideTouchable(true);
 		// 关闭事件
-		popupWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
-		popupWindow
-				.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//		popupWindow.setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED);
+		popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
 		popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
 			@Override

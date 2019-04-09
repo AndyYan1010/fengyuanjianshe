@@ -119,9 +119,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 //是否记住账号密码
                 isNeedRem(number, pass);
                 //冯源建设
-                loginFun(number, pass);
-                //常州天宏
-                //                loginFunCZ(number, pass);
+                //                loginFun(number, pass);
+                //常州天虹
+                loginFunCZ(number, pass);
                 //                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 //                startActivity(intent);
 
@@ -304,14 +304,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             ProgressDialogUtil.hideDialog();
             //  Intent intent0 = new Intent(LoginActivity.this, MainActivity.class);
             //  startActivity(intent0);
-            if ("0".equals(s)) {
+            if (s.startsWith("0")) {
                 ToastUtils.showToast(LoginActivity.this, "登陆成功");
                 MyAppliaction.userName = username;
+                if (s.endsWith("2")) {
+                    MyAppliaction.userAllRight = true;
+                }
                 Intent intent0 = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent0);
-            } else if ("1".equals(s)) {
+            } else if (s.startsWith("1")) {
                 ToastUtils.showToast(LoginActivity.this, "登陆失败，密码错误");
-            } else if ("2".equals(s)) {
+            } else if (s.startsWith("2")) {
                 ToastUtils.showToast(LoginActivity.this, "登陆失败，用户名错误");
             } else {
                 ToastUtils.showToast(LoginActivity.this, "登陆失败，未知错误");

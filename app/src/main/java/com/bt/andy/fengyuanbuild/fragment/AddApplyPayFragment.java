@@ -16,6 +16,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -40,6 +41,7 @@ import com.bt.andy.fengyuanbuild.messegeInfo.HeTongBianHaoInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.OrderDataInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SaveForResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.SubListInfo;
+import com.bt.andy.fengyuanbuild.utils.CompressImageUtil;
 import com.bt.andy.fengyuanbuild.utils.Consts;
 import com.bt.andy.fengyuanbuild.utils.EditTextUtils;
 import com.bt.andy.fengyuanbuild.utils.MyFragmentManagerUtil;
@@ -57,6 +59,7 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -554,7 +557,15 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
     private void upImageFile(String filePath) {
         File file = new File(filePath);
         if (null != file && file.exists()) {
-            String imgStr = getImgStr(filePath);
+            //图片文件直接转的base64
+            //String imgStr = getImgStr(filePath);
+
+            //二、文件转bitmap，压缩后，再上传bitmap的base64
+            BitmapFactory.Options newOpts = new BitmapFactory.Options();
+            Bitmap bit = BitmapFactory.decodeFile(filePath, newOpts);
+            Bitmap bitmap = CompressImageUtil.comprUSLarge(bit, 200);
+            String imgStr = bitmap2StrByBase64(bitmap);
+
             String name = file.getName();
             long length = file.length();
             String suffix = "." + name.substring(name.lastIndexOf(".") + 1);
@@ -866,25 +877,6 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
                         });
                     }
                 });
-
-
-                //长按删除
-                //                AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), android.app.AlertDialog.THEME_HOLO_LIGHT);
-                //                builder.setTitle("温馨提示");
-                //                builder.setMessage("您确定要删除该笔费用吗？");
-                //                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                //
-                //                    @Override
-                //                    public void onClick(DialogInterface dialog, int which) {
-                //                        mData.remove(i);
-                //                        addApplyAdapter.notifyDataSetChanged();
-                //                    }
-                //                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                //                    @Override
-                //                    public void onClick(DialogInterface dialog, int which) {
-                //                        dialog.cancel();
-                //                    }
-                //                }).create().show();
                 return true;
             }
         });
@@ -1197,6 +1189,14 @@ public class AddApplyPayFragment extends Fragment implements View.OnClickListene
         return new String(org.apache.commons.codec.binary.Base64.encodeBase64(data));
     }
 
+    /*bitmap转base64*/
+    public String bitmap2StrByBase64(Bitmap bit) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bit.compress(Bitmap.CompressFormat.JPEG, 80, bos);//参数100表示不压缩
+        byte[] bytes = bos.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+        //return new String(Base64.encodeToString(bytes, Base64.NO_WRAP));
+    }
 
     private void searchBankNo() {
         ThreadUtils.runOnSubThread(new Runnable() {

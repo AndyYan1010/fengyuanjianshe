@@ -11,8 +11,11 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
-import com.bt.andy.fengyuanbuild.activity.BillForPayActivity;
+import com.bt.andy.fengyuanbuild.activity.NotOutOfStockActivity;
+import com.bt.andy.fengyuanbuild.activity.ReceivableSheetActivity;
+import com.bt.andy.fengyuanbuild.activity.SearchStockActivity;
 import com.bt.andy.fengyuanbuild.adapter.MenuGridviewApater;
 import com.bt.andy.fengyuanbuild.messegeInfo.MainMenuEntity;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
@@ -72,24 +75,32 @@ public class Home_F extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i == 2) {
                     //库存查询界面
-                    ToastUtils.showToast(getContext(), "暂未开通");
-                    //                    Intent intent = new Intent(getContext(), SearchStockActivity.class);
-                    //                    startActivity(intent);
+                    //                    ToastUtils.showToast(getContext(), "暂未开通");
+                    Intent intent = new Intent(getContext(), SearchStockActivity.class);
+                    startActivity(intent);
                 } else if (i == 3) {
                     //应收账款报表界面
-                    ToastUtils.showToast(getContext(), "暂未开通");
-                    //                    Intent intent = new Intent(getContext(), ReceivableSheetActivity.class);
-                    //                    startActivity(intent);
+                    //                    ToastUtils.showToast(getContext(), "暂未开通");
+                    if (MyAppliaction.userAllRight){
+                        Intent intent = new Intent(getContext(), ReceivableSheetActivity.class);
+                        startActivity(intent);
+                    }else {
+                        ToastUtils.showToast(getContext(), "您暂未开通此权限");
+                    }
                 } else if (i == 4) {
                     //订单未出库表界面
-                    ToastUtils.showToast(getContext(), "暂未开通");
-                    //                    Intent intent = new Intent(getContext(), NotOutOfStockActivity.class);
-                    //                    startActivity(intent);
+                    //                    ToastUtils.showToast(getContext(), "暂未开通");
+                    if (MyAppliaction.userAllRight){
+                        Intent intent = new Intent(getContext(), NotOutOfStockActivity.class);
+                        startActivity(intent);
+                    }else {
+                        ToastUtils.showToast(getContext(), "您暂未开通此权限");
+                    }
                 } else if (i == 5) {
                     //付款申请单审批界面
-                    //                    ToastUtils.showToast(getContext(), "暂未开通");
-                    Intent intent = new Intent(getContext(), BillForPayActivity.class);
-                    startActivity(intent);
+                    ToastUtils.showToast(getContext(), "暂未开通");
+                    //                    Intent intent = new Intent(getContext(), BillForPayActivity.class);
+                    //                    startActivity(intent);
                 } else {
                     ToastUtils.showToast(getContext(), "暂未开通");
                 }

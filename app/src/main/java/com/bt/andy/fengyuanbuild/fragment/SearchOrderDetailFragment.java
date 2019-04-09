@@ -1,10 +1,14 @@
 package com.bt.andy.fengyuanbuild.fragment;
 
 import android.app.AlertDialog;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,6 +27,7 @@ import com.bt.andy.fengyuanbuild.MyAppliaction;
 import com.bt.andy.fengyuanbuild.R;
 import com.bt.andy.fengyuanbuild.adapter.LvAddApplyAdapter;
 import com.bt.andy.fengyuanbuild.adapter.LvShowMoreAdapter;
+import com.bt.andy.fengyuanbuild.adapter.MyRecPicAdapter;
 import com.bt.andy.fengyuanbuild.messegeInfo.DeleteResultInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.FeiYongXMInfo;
 import com.bt.andy.fengyuanbuild.messegeInfo.HeTongBianHaoInfo;
@@ -36,6 +41,7 @@ import com.bt.andy.fengyuanbuild.utils.EditTextUtils;
 import com.bt.andy.fengyuanbuild.utils.MyFragmentManagerUtil;
 import com.bt.andy.fengyuanbuild.utils.PopupOpenHelper;
 import com.bt.andy.fengyuanbuild.utils.ProgressDialogUtil;
+import com.bt.andy.fengyuanbuild.utils.SQLiteDbHelper;
 import com.bt.andy.fengyuanbuild.utils.ThreadUtils;
 import com.bt.andy.fengyuanbuild.utils.ToastUtils;
 import com.bt.andy.fengyuanbuild.viewmodle.MyListView;
@@ -108,6 +114,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
     private LvShowMoreAdapter   showMoreAdapter;
     private String              fyxmID;//临时记录费用项目的ID
     private PopupOpenHelper     popupOpenHelper;//弹出填写子表窗口
+    private RecyclerView        recy_addpic;//图片显示列表
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -134,6 +141,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         tv_zdr = mRootView.findViewById(R.id.tv_zdr);
         tv_wy = mRootView.findViewById(R.id.tv_wy);
         et_use = mRootView.findViewById(R.id.et_use);
+        recy_addpic = mRootView.findViewById(R.id.recy_addpic);
         lv_order = mRootView.findViewById(R.id.lv_order);
         tv_submit = mRootView.findViewById(R.id.tv_submit);
     }
@@ -168,6 +176,9 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         mOrderDataInfo = new OrderDataInfo();
         //初始化子表list
         initListView();
+        //初始化recyclerview数据
+        initRecyView();
+
         //获取付款申请单详情
         getOrderDetail();
         //查找图片
@@ -232,6 +243,17 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         }
     }
 
+    private List            mBitmapList;
+    private MyRecPicAdapter recPicAdapter;
+
+    private void initRecyView() {
+        //添加初始展示的图片
+        mBitmapList = new ArrayList<>();
+        recy_addpic.setLayoutManager(new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
+        recPicAdapter = new MyRecPicAdapter(getContext(), mBitmapList, false);
+        recy_addpic.setAdapter(recPicAdapter);
+    }
+
     //驳回申请单
     private void showPopUp2Back() {
         //弹出提示框确认驳回
@@ -274,6 +296,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
                     result = client.login(Consts.dbId, MyAppliaction.userName, MyAppliaction.userpswd, Consts.lang);
                     if (result) {
                         //TODO:调驳回api
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -974,7 +997,7 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
 
             // 设置需调用WebService接口需要传入的参数
             rpc.addProperty("FINTERID", 0);//FINTERID
-            rpc.addProperty("FBILLNO", "FKSQ000047");//FBILLNO
+            rpc.addProperty("FBILLNO", FBILLNO);// FKSQ000047
 
             // 生成调用WebService方法的SOAP请求信息,并指定SOAP的版本
             SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER10);
@@ -995,27 +1018,64 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
 
             // 获取返回的数据
             SoapObject object = (SoapObject) envelope.bodyIn;
-
             // 获取返回的结果
             Log.i("返回结果", object.getProperty(0).toString() + "=========================");
-            String result = object.getProperty(0).toString();//[{"status":"01","message":"成功","FATTACHMENTNAME":"IMG_20180129_095450.jpg","FEXTNAME":".jpg","bufferstr":"wD9k="}]
+            String result = object.getProperty(0).toString();
+            //[{"status":"01","message":"成功","FATTACHMENTNAME":"IMG_20180129_095450.jpg","FEXTNAME":".jpg","bufferstr":"wD9k="}]
             try {
                 JSONArray jsonArray = new JSONArray(result);
                 Gson gson = new Gson();
-                LoadPicInfo loadPicInfo = gson.fromJson(jsonArray.get(0).toString(), LoadPicInfo.class);
+                final LoadPicInfo loadPicInfo = gson.fromJson(jsonArray.get(0).toString(), LoadPicInfo.class);
+                ThreadUtils.runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast(getContext(), loadPicInfo.getMessage());
+                    }
+                });
                 if ("01".equals(loadPicInfo.getStatus())) {
+                    final String fattachmentname = loadPicInfo.getFATTACHMENTNAME();
                     final String bufferstr = loadPicInfo.getBufferstr();
-                    //将base64转图片
-                    long photoTime = System.currentTimeMillis();
-                    final String path = Environment.getExternalStorageDirectory().getPath() + "/temp" + photoTime + ".jpg";// 获取SD卡路径
-                    ThreadUtils.runOnSubThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            boolean b = base64StrToImage(bufferstr, path);
+                    boolean isHad = false;
+                    //图片本地地址
+                    String imgLocalPath = "";
+                    SQLiteDbHelper sqLiteDbHelper = new SQLiteDbHelper(getContext());
+                    SQLiteDatabase database = sqLiteDbHelper.getWritableDatabase();
+                    //先查看本地是否已下载该文件
+                    String sqlQue = "select * from " + SQLiteDbHelper.TABLE_PIC + " where name='" + fattachmentname + "'";
+                    Cursor cursor = database.rawQuery(sqlQue, new String[]{});
+                    cursor.moveToFirst();
+                    while (!cursor.isAfterLast()) {
+                        String name = cursor.getString(1);
+                        if (fattachmentname.equals(name)) {
+                            //文件名相同表示已下载
+                            isHad = true;
+                            imgLocalPath = cursor.getString(2);
                         }
-                    });
+                        cursor.moveToNext();
+                    }
+                    cursor.close();
+                    if (isHad) {
+                        //已下载过该图片
+                        return imgLocalPath;
+                    } else {
+                        //保存图片，并记录地址
+                        //将base64转图片
+                        long photoTime = System.currentTimeMillis();
+                        //图片地址
+                        final String path = Environment.getExternalStorageDirectory().getPath() + "/temp" + photoTime + ".jpg";// 获取SD卡路径
+                        boolean b = base64StrToImageFile(bufferstr, path);
+                        if (b) {
+                            //保存成功，将保存地址存入数据库
+                            String sql = "insert into " + SQLiteDbHelper.TABLE_PIC + " (name,address) values ('" + fattachmentname + "','" + path + "')";
+                            database.execSQL(sql);
+                            //返回图片保存的本地地址
+                            return path;
+                        } else {
+                            //保存失败
+                            return "1";
+                        }
+                    }
                 }
-                ToastUtils.showToast(getContext(), loadPicInfo.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
                 return "1";
@@ -1027,10 +1087,22 @@ public class SearchOrderDetailFragment extends Fragment implements View.OnClickL
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             ProgressDialogUtil.hideDialog();
+            if (!"0".equals(s) && !"1".equals(s)) {
+                //不为1/0时表示下载或者读取成功,s为图片本地地址
+                if (null != s && !"".equals(s)) {
+                    //获取到本地图片地址
+                    mBitmapList.add(s);
+                    recPicAdapter.notifyDataSetChanged();
+                } else {
+                    ToastUtils.showToast(getContext(), "获取图片失败");
+                }
+            } else {
+                ToastUtils.showToast(getContext(), "获取图片失败");
+            }
         }
     }
 
-    private boolean base64StrToImage(String bufferstr, String path) {
+    private boolean base64StrToImageFile(String bufferstr, String path) {
         if (bufferstr == null) {
             // 图像数据为空
             return false;

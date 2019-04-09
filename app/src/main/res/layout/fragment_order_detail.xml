@@ -450,6 +450,18 @@
 
             <View
                 android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/vm_black_87"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recy_addpic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+            </android.support.v7.widget.RecyclerView>
+
+            <View
+                android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:background="@color/gray_ef"/>
 

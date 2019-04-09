@@ -9,7 +9,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import com.bt.andy.fengyuanbuild.fragment.Home_F;
 import com.bt.andy.fengyuanbuild.fragment.Stock_F;
 import com.bt.andy.fengyuanbuild.fragment.User_F;
